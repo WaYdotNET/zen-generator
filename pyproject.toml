@@ -9,6 +9,7 @@ dependencies = [
     "pyyaml>=6.0.2",
     "ruff>=0.9.9",
     "typer>=0.15.2",
+    "yamllint>=1.35.1",
 ]
 
 [dependency-groups]
@@ -19,6 +20,42 @@ test = [
 [project.scripts]
 zen-generator = "zen_generator.cli:app"
 
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+
+
+[tool.ruff.lint]
+exclude = [
+    ".venv",
+    "__pycache__",
+]
+ignore = [
+    "B018", # Found useless expression. Either assign it to a variable or remove it.
+    "B026", # Star-arg unpacking after a keyword argument is strongly discouraged
+    "B904", # Within an except clause, raise exceptions with raise ... from err or raise ... from None to
+    # distinguish them from errors in exception handling.
+    "B905", # zip() without an explicit strict= parameter set. strict=True causes the resulting iterator
+    # to raise a ValueError if the arguments are exhausted at differing lengths.
+    "E722", # Do not use bare except, specify exception instead
+]
+# Allow autofix for all enabled rules (when `--fix`) is provided.
+fixable = [
+    "I",
+]
+unfixable = [
+    "F401", # don't remove unused import
+]
+
+select = [
+    "B", # flake8-bugbear
+    "C9", # mccabe
+    "E", # pycodestyle
+    "F", # pyflakes
+    "I", # isort
+    "Q", # flake8-quotes
+    "W", # pycodestyle
+]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

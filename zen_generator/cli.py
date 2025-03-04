@@ -12,9 +12,9 @@ app = typer.Typer()
 
 @app.command()
 def asyncapi_documentation(
-    models_file: Annotated[Path, typer.Option()] = "models.py",
-    functions_file: Annotated[Path, typer.Option()] = "functions.py",
-    output_file: Annotated[Path, typer.Option()] = "asyncapi.yaml",
+    models_file: Annotated[Path, typer.Option()] = Path("models.py"),
+    functions_file: Annotated[Path, typer.Option()] = Path("functions.py"),
+    output_file: Annotated[Path, typer.Option()] = Path("asyncapi.yaml"),
     application_name: Annotated[str, typer.Option()] = "Zen",
 ):
     print("Preparing to generate the documentation")

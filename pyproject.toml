@@ -6,16 +6,19 @@ authors = [{ name = "Carlo Bertini [WaYdotNET]", email = "waydotnet@gmail.com" }
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
-    "black>=25.1.0",
     "pyyaml>=6.0.2",
+    "ruff>=0.9.9",
     "typer>=0.15.2",
 ]
 
 [dependency-groups]
-lint = [
-    "ruff>=0.9.9",
-]
 test = [
     "coverage>=7.6.12",
     "pytest>=8.3.5",
 ]
+[project.scripts]
+zen-generator = "zen_generator.cli:app"
+
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

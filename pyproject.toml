@@ -5,21 +5,26 @@ description = "async api doc generator"
 authors = [{ name = "Carlo Bertini [WaYdotNET]", email = "waydotnet@gmail.com" }]
 readme = "README.md"
 requires-python = ">=3.10"
+
 dependencies = [
     "black>=25.1.0",
     "pyyaml>=6.0.2",
-    "ruff>=0.9.9",
+
     "typer>=0.15.2",
     "yamllint>=1.35.1",
 ]
 
 [dependency-groups]
-test = [
+dev = [
     "coverage>=7.6.12",
+    "mypy>=1.15.0",
+    "ruff>=0.9.9",
     "pytest>=8.3.5",
+    "types-pyyaml>=6.0.12.20241230",
 ]
+
 [project.scripts]
-zen-generator = "zen_generator.cli:app"
+zen-generator = "zen_generator.cli"
 
 [tool.ruff]
 line-length = 120
@@ -42,7 +47,7 @@ ignore = [
 ]
 # Allow autofix for all enabled rules (when `--fix`) is provided.
 fixable = [
-    "I",
+    "I", # isort
 ]
 unfixable = [
     "F401", # don't remove unused import

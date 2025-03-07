@@ -1,21 +1,10 @@
 from __future__ import annotations
 
-from ast import (
-    AsyncFunctionDef,
-    Constant,
-    Expr,
-    FunctionDef,
-    get_docstring,
-    Module,
-    walk,
-)
+from ast import AsyncFunctionDef, FunctionDef, get_docstring, Module, walk
 import re
 from typing import Any
 
-from zen_generator.core.ast_utils import (
-    convert_annotations_to_asyncapi_schemas,
-    convert_ast_annotation_to_dict,
-)
+from zen_generator.core.ast_utils import convert_annotations_to_asyncapi_schemas, convert_ast_annotation_to_dict
 
 # Define regular expressions for Args and Returns sections
 ARGS_PATTERN = re.compile(r"Args:(.*?)(?:Returns|$)", re.DOTALL)
@@ -32,7 +21,7 @@ def function_to_asyncapi_schemas(
     :return: Tuple with the request and response schemas
     """
     name = function_node.name
-    docstring = _extract_docstring(function_node)
+    docstring = get_docstring(function_node) or ""
 
     args_match = ARGS_PATTERN.search(docstring)
     returns_match = RETURNS_PATTERN.search(docstring)
@@ -46,18 +35,6 @@ def function_to_asyncapi_schemas(
     response_schema = _create_response_schema(function_node, name, docstring, returns_match)
 
     return request_schema, response_schema
-
-
-def _extract_docstring(function_node: FunctionDef | AsyncFunctionDef) -> str:
-    """
-    Extract the docstring from the function node
-    :param function_node: Function node
-    :return: Docstring
-    """
-    for stmt in function_node.body:
-        if isinstance(stmt, Expr) and isinstance(stmt.value, Constant):
-            return stmt.value.s
-    return ""
 
 
 def _create_request_schema(
@@ -143,17 +120,17 @@ def _create_response_schema(
 
 def function_content_reader(tree: Module | None) -> tuple[str | None, dict[str, Any]]:
     """
-    Parse a proxy module to a dictionary
+    Parse a functions module to a dictionary
     :param tree: Python AST
-    :return: Tuple with the docstring and the proxy dictionary
+    :return: Tuple with the docstring and the functions dictionary
     """
-    proxy_docstring = get_docstring(tree) if tree else ""
-    proxy_to_async: dict[str, Any] = {}
+    functions_docstring = get_docstring(tree) if tree else ""
+    functions_to_async: dict[str, Any] = {}
 
     if tree is not None:
         for node in walk(tree):
             if isinstance(node, (FunctionDef, AsyncFunctionDef)):
                 request, response = function_to_asyncapi_schemas(node)
-                proxy_to_async.update({f"{node.name}": {"request": request, "response": response}})
+                functions_to_async.update({f"{node.name}": {"request": request, "response": response}})
 
-    return proxy_docstring, proxy_to_async
+    return functions_docstring, functions_to_async

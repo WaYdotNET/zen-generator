@@ -67,9 +67,9 @@ def _add_docstring(function_body: list[stmt], source_content: dict[str, Any]) ->
 
 def _add_models_import(function_body: list[stmt], models: dict[str, Any], module_name: str = "models") -> None:
     """
-    Add import for interfaces
-    :param function_body: The proxy body
-    :param models: The interfaces
+    Add import for models
+    :param function_body: The function body
+    :param models: The models
     :return: None
     """
     if models.items():
@@ -89,7 +89,7 @@ def generate_models_ast(
     additional_imports: Sequence[stmt] | None = None,
 ) -> list[stmt]:
     """
-    Generate the AST for the interfaces
+    Generate the AST for the models
     :param schemas: The schemas
     :param include_typing_import: Whether to include typing import
     :param include_enums_import: Whether to include enums import
@@ -151,7 +151,7 @@ def generate_function_ast(
     decorator_list: Sequence[expr] | None = None,
 ) -> list[stmt]:
     """
-    Generate the AST for the proxy
+    Generate the AST for the functions
     :param source_content: The source content
     :param models: The models
     :param app_name: The name of the application
@@ -192,7 +192,7 @@ def _add_function_definitions(
     function_body: list[stmt],
     components: dict[str, Any],
     is_async: bool = False,
-    decorator_list: list[expr] | None = None,
+    decorator_list: Sequence[expr] | None = None,
 ) -> None:
     """
     Add function definitions to the function
@@ -216,7 +216,7 @@ def _add_function_definitions(
         function_body.append(func_def)
 
 
-def _process_decorators(decorator_list: list[expr] | None, func_name: str) -> list[expr]:
+def _process_decorators(decorator_list: Sequence[expr] | None, func_name: str) -> list[expr]:
     """
     Process decorators and substitute function name placeholders
     :param decorator_list: List of decorator AST expressions

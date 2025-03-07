@@ -11,7 +11,7 @@ from zen_generator.core.exception import InvalidFile
 from zen_generator.core.formatting import format_python_code
 
 
-def parse_python_file_to_ast(source: Path) -> AST | Module | None:
+def parse_python_file_to_ast(source: Path) -> Module | None:
     """
     Parse a python file to an AST
     :param source: Path to the python file
@@ -67,9 +67,9 @@ def save_yaml_file(async_api_content: dict[str, Any] | None, destination: Path, 
         f.write(dumped)
 
 
-def save_python_file(proxy_body: list[Any], destination: Path) -> None:
-    proxy_module = Module(body=proxy_body, type_ignores=[])
-    python_file_content = unparse(fix_missing_locations(proxy_module))
+def save_python_file(function_body: list[Any], destination: Path) -> None:
+    python_module = Module(body=function_body, type_ignores=[])
+    python_file_content = unparse(fix_missing_locations(python_module))
     python_file_content = format_python_code(python_file_content)
     with open(destination, mode="w") as f:
         f.write(python_file_content)

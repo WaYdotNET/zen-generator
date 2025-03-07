@@ -3,26 +3,23 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any, Optional
 
-from zen_generator.core.ast_utils import (
-    components_schemas,
-    convert_annotations_to_asyncapi_schemas,
-)
+from zen_generator.core.ast_utils import components_schemas, convert_annotations_to_asyncapi_schemas
 from zen_generator.core.io import parse_python_file_to_ast, save_yaml_file
 from zen_generator.core.parsing import function_content_reader
 
 
 def create_async_api_content(
     app_name: str,
-    interface_schema: dict[str, Any],
-    proxy_docstring: str | None,
-    proxy_parsed: dict[str, Any],
+    models_schema: dict[str, Any],
+    functions_docstring: str | None,
+    functions_parsed: dict[str, Any],
 ):
     """
-    Create an AsyncAPI document from the provided interface schema and parsed proxy content.
+    Create an AsyncAPI document from the provided models schema and parsed functions content.
     :param app_name: The name of the application
-    :param interface_schema: The schema of the interface
-    :param proxy_docstring: The docstring of the proxy
-    :param proxy_parsed: The parsed proxy content
+    :param models_schema: The schema of the models
+    :param functions_docstring: The docstring of the functions
+    :param functions_parsed: The parsed functions content
     :return: The generated AsyncAPI document
     """
     channels = {}
@@ -31,9 +28,9 @@ def create_async_api_content(
         "channels": {},
         "operations": {},
         "messages": {},
-        "schemas": interface_schema,
+        "schemas": models_schema,
     }
-    for func, content in proxy_parsed.items():
+    for func, content in functions_parsed.items():
         # channels
         channels[func] = {"$ref": f"#/components/channels/{func}"}
 
@@ -69,7 +66,7 @@ def create_async_api_content(
         "info": {
             "title": app_name,
             "version": "0.0.1",
-            "description": proxy_docstring,
+            "description": functions_docstring,
         },
         "channels": channels,
         "operations": operations,

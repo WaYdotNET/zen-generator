@@ -1,9 +1,7 @@
 from __future__ import annotations
 
 from ast import (
-    alias,
     AnnAssign,
-    arg,
     Assign,
     Attribute,
     BinOp,
@@ -12,18 +10,20 @@ from ast import (
     ClassDef,
     Constant,
     Expr,
-    expr,
     Import,
     ImportFrom,
     Load,
     Name,
-    parse,
     Pass,
-    stmt,
     Store,
+    alias,
+    arg,
+    expr,
+    parse,
+    stmt,
     unparse,
 )
-from typing import Any, cast, Sequence
+from typing import Any, Sequence, cast
 
 from zen_generator.core.ast_utils import convert_property, create_ast_function_definition
 
@@ -84,13 +84,15 @@ def _add_models_import(function_body: list[stmt], models: dict[str, Any], module
 
 def generate_models_ast(
     schemas: dict[str, Any],
+    override_base_class: str | None = None,
     include_typing_import: bool = True,
     include_enums_import: bool = True,
-    additional_imports: Sequence[stmt] | None = None,
+    additional_imports: Sequence[stmt | ImportFrom] | None = None,
 ) -> list[stmt]:
     """
     Generate the AST for the models
     :param schemas: The schemas
+    :param override_base_class: The base class to override
     :param include_typing_import: Whether to include typing import
     :param include_enums_import: Whether to include enums import
     :param additional_imports: Additional imports
@@ -107,6 +109,7 @@ def generate_models_ast(
 
     for class_name, schema in schemas.items():
         class_body: list[stmt] = []
+        base_class_id = override_base_class or schema.get("base_class", "object")
         if schema.get("properties"):
             for prop_name, prop_value in schema["properties"].items():
                 annotation = convert_property(prop_value)
@@ -129,7 +132,7 @@ def generate_models_ast(
 
         klass = ClassDef(
             name=class_name,
-            bases=[Name(id=schema.get("base_class", "object"), ctx=Load())],
+            bases=[Name(id=base_class_id, ctx=Load())],
             body=class_body,
             decorator_list=[],
             keywords=[],

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from ast import AsyncFunctionDef, FunctionDef, get_docstring, Module, walk
 import re
+from ast import AsyncFunctionDef, FunctionDef, Module, get_docstring, walk
 from typing import Any
 
 from zen_generator.core.ast_utils import convert_annotations_to_asyncapi_schemas, convert_ast_annotation_to_dict

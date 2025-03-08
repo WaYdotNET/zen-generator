@@ -1,16 +1,22 @@
 # Zen Generator
 
-This tool aims to improve the developer experience in creating current proxies, with its two (currently) simple
-features:
+Zen Generator is a powerful CLI tool that improves the developer experience in creating and maintaining API functions and documentation. It provides bidirectional conversion between AsyncAPI specifications and Python code, with support for both pure Python and FastAPI implementations.
 
-- generate documentation (using the [asyncapi v.3.0.0](https://www.asyncapi.com/docs/reference/specification/v3.0.0)
-  standard) starting from the `proxy.py` file (containing the functions) and `interfaces.py` file (containing any
-  interfaces necessary for the proxies themselves)
-- generate the `proxy.py` file (containing only the function signatures) and `interfaces.py` file (containing any
-  interfaces necessary for the proxies themselves, excluding the necessary imports)
+## Features
 
-- [FastApi] generate the `models.py` file (containing only the function signatures) and `endpoints.py` file (containing
-  the necessary models for the `Fastapi` endpoints themselves, excluding the necessary imports)
+- Generate AsyncAPI documentation (v3.0.0) from Python source files:
+  - Convert `functions.py` (containing functions) and `models.py` (containing models) into AsyncAPI specs
+  - Full support for complex Python types and None handling
+
+- Generate Python code from AsyncAPI documentation:
+  - Create `functions.py` with function signatures
+  - Create `models.py` with necessary model definitions
+  - Automatic type conversion and imports management
+
+- FastAPI Integration:
+  - Generate `models.py` with Pydantic models
+  - Generate `endpoints.py` with FastAPI route handlers
+  - Full support for async/sync operations
 
 **Regarding the `asyncapi v.3.0.0` standard, I used the `format=required` parameter in the response `payload` of a
 function to correctly handle the `None` case, as it is possible to have more than one "object" as a function response**,
@@ -21,57 +27,98 @@ def func_bar(foo: int) -> int | str | InterfaceBaz | None:
     ...
 ```
 
-## Available Commands
+## Installation
 
-To get a list of all available commands, use the helper
-
-```shell
-zen-generator  --help
+```bash
+pip install zen-generator
 ```
 
-The helper is also available for each individual command, example:
+## Command Line Usage
 
-```shell
-zen-generator generate-doc --help
+Zen Generator provides a CLI with several commands. To see all available commands:
+
+```bash
+zen-generator --help
 ```
 
-### Generating documentation from python files
+For help with a specific command:
 
-To generate the documentation file from the `proxy.py` and `interfaces.py` files, use the following command:
-
-```shell
-zen-generator generate-doc --source-interface my_app/interfaces.py --source-proxy my_app/proxy.py --destination foo/myapp_doc.yml --app-name my_app
+```bash
+zen-generator <command> --help
 ```
 
-### Generating `proxy.py` and `interfaces.py` files from `asyncapi` documentation
+### 1. Generate AsyncAPI Documentation
 
-To generate the `proxy.py` and `interfaces.py` files from the `asyncapi` documentation file, use the following command:
+Create AsyncAPI documentation from your Python files:
 
-```shell
-zen-generator proxy-with-interface --source myapp_doc.yaml --destination foo/ --app-name foo
+```bash
+zen-generator asyncapi-documentation \
+    --models-file models.py \
+    --functions-file functions.py \
+    --output-file asyncapi.yaml \
+    --application-name "My App"
 ```
 
-It is also possible to create only the `proxy.py` or `interfaces.py` file with the respective commands
+Options:
+- `--models-file`: Path to your models file (default: models.py)
+- `--functions-file`: Path to your functions file (default: functions.py)
+- `--output-file`: Output path for AsyncAPI spec (default: asyncapi.yaml)
+- `--application-name`: Name of your application (default: "Zen")
 
-```shell
-zen-generator proxy --source foo/myapp_doc.yaml --destination baz/ --app-name foo
+### 2. Generate Python Code
+
+Create Python files from AsyncAPI documentation:
+
+```bash
+zen-generator pure-python \
+    --asyncapi-file asyncapi.yaml \
+    --models-file models.py \
+    --functions-file functions.py \
+    --application-name "My App" \
+    --is-async
 ```
 
-```shell
-zen-generator interface --source myapp_doc.yaml --destination my_app_foo_bar/
+Options:
+- `--asyncapi-file`: Path to AsyncAPI spec (default: asyncapi.yaml)
+- `--models-file`: Output path for models (default: models.py)
+- `--functions-file`: Output path for functions (default: functions.py)
+- `--application-name`: Name of your application (default: "Zen")
+- `--is-async`: Generate async code (default: false)
 ```
 
-### [FastApi] Generating `models.py` and `endpoints.py` files from `asyncapi` documentation
+### 3. Generate FastAPI Code
 
-To generate the `models.py` and `endpoints.py` files from the `asyncapi` documentation file, use the following command:
+Create FastAPI endpoints and models from AsyncAPI documentation:
 
-```shell
-zen-generator generate-fastapi --source tests/test.yaml --destination tests/output --app-name foo
+```bash
+zen-generator fastapi \
+    --asyncapi-file asyncapi.yaml \
+    --models-file models.py \
+    --functions-file functions.py \
+    --application-name "My App" \
+    --is-async
 ```
+
+Options:
+- `--asyncapi-file`: Path to AsyncAPI spec (default: asyncapi.yaml)
+- `--models-file`: Output path for models (default: models.py)
+- `--functions-file`: Output path for functions (default: functions.py)
+- `--application-name`: Name of your application (default: "Zen")
+- `--is-async`: Generate async code (default: false)
+
+## Type Handling
+
+Zen Generator provides robust support for Python type annotations and their conversion to AsyncAPI schemas:
+
+- Full support for basic Python types (int, str, bool, etc.)
+- Support for complex types (Union, Optional, List, Dict)
+- Proper handling of None/Optional types using AsyncAPI's format=required parameter
+- Support for custom classes and TypedDict
+- Automatic conversion of Python type hints to AsyncAPI schemas and vice versa
 
 ## Examples
 
-A small example of the current output (either starting from an asyncapi file and generating python files or vice versa)
+Here's a complete example demonstrating the bidirectional conversion between Python code and AsyncAPI specification:
 
 my_app.yaml
 
@@ -184,7 +231,7 @@ proxy.py
 very nice app!!"""
 from __future__ import annotations
 import logging
-from .interfaces import TaskBar, FooBar
+from .models import TaskBar, FooBar
 
 logger = logging.getLogger("foo")
 
@@ -201,9 +248,16 @@ def foo(
 
     Returns:
         I don't know what it returns
-    """
-    ...
+    "
 ```
+
+## Contributing
+
+Contributions are welcome! Feel free to open issues or submit pull requests.
+
+## License
+
+MIT License
 
 interfaces.py
 

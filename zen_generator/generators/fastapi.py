@@ -1,12 +1,27 @@
 from __future__ import annotations
 
-from ast import alias, Assign, Attribute, Call, Constant, expr, ImportFrom, Load, Name, stmt, Store
+from ast import (
+    Assign,
+    Attribute,
+    Call,
+    Constant,
+    ImportFrom,
+    Load,
+    Name,
+    Store,
+    alias,
+    expr,
+    stmt,
+)
 from pathlib import Path
 from typing import Sequence
 
 from zen_generator.core.ast_utils import get_component_schemas
 from zen_generator.core.io import load_yaml, save_python_file
-from zen_generator.generators.common_python import generate_function_ast, generate_models_ast
+from zen_generator.generators.common_python import (
+    generate_function_ast,
+    generate_models_ast,
+)
 
 
 def generate_fastapi_from_asyncapi(
@@ -30,7 +45,11 @@ def generate_fastapi_from_asyncapi(
     additional_imports: Sequence[stmt] = [
         ImportFrom(module="pydantic", names=[alias(name="BaseModel")], level=0),
     ]
-    model = generate_models_ast(component_schemas, additional_imports=additional_imports)
+    model = generate_models_ast(
+        component_schemas,
+        additional_imports=additional_imports,
+        include_typing_import=False,
+    )
     save_python_file(model, models_file)
 
     decorator_list: Sequence[expr] = [

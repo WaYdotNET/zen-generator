@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from rich import print
 import typer
+from rich import print
 from typing_extensions import Annotated
 
 from zen_generator.generators.asyncapi import generate_asyncapi_from_files

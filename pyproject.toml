@@ -30,7 +30,6 @@ zen-generator = "zen_generator.cli"
 line-length = 120
 target-version = "py312"
 
-
 [tool.ruff.lint]
 exclude = [
     ".venv",
@@ -48,10 +47,9 @@ ignore = [
 # Allow autofix for all enabled rules (when `--fix`) is provided.
 fixable = [
     "I", # isort
+    "F", # pyflakes
 ]
-unfixable = [
-    "F401", # don't remove unused import
-]
+unfixable = []
 
 select = [
     "B", # flake8-bugbear
@@ -62,6 +60,9 @@ select = [
     "Q", # flake8-quotes
     "W", # pycodestyle
 ]
+[tool.ruff.lint.isort]
+required-imports = ["from __future__ import annotations"]
+
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

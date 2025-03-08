@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from ast import AST, fix_missing_locations, Module, parse, unparse
 import json
+from ast import Module, fix_missing_locations, parse, unparse
 from pathlib import Path
 from typing import Any, Dict, Literal
 

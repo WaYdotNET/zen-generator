@@ -7,8 +7,7 @@ from rich import print
 from typing_extensions import Annotated
 
 from zen_generator.generators.asyncapi import generate_asyncapi_from_files
-from zen_generator.generators.fastapi import generate_fastapi_from_asyncapi
-from zen_generator.generators.pure_python import generate_pure_python_from_asyncapi
+from zen_generator.generators.python import Generator
 
 app = typer.Typer()
 
@@ -41,7 +40,8 @@ def pure_python(
 ):
     print("Preparing to generate models and functions from the asyncapi file")
     if asyncapi_file.is_file():
-        generate_pure_python_from_asyncapi(asyncapi_file, models_file, functions_file, application_name, is_async)
+        generator = Generator.pure_python_generator()
+        generator.generate_files_from_asyncapi(asyncapi_file, models_file, functions_file, application_name, is_async)
     else:
         print(
             f":boom: :boom: [bold red]the source file '{asyncapi_file}' "
@@ -60,7 +60,8 @@ def fastapi(
 ):
     print("Preparing to generate models and functions from the asyncapi file")
     if asyncapi_file.is_file():
-        generate_fastapi_from_asyncapi(asyncapi_file, models_file, functions_file, application_name, is_async)
+        generator = Generator.fastapi_generator()
+        generator.generate_files_from_asyncapi(asyncapi_file, models_file, functions_file, application_name, is_async)
     else:
         print(
             f":boom: :boom: [bold red]the source file '{asyncapi_file}' "

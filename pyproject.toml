@@ -54,6 +54,7 @@ unfixable = []
 select = [
     "B", # flake8-bugbear
     "C9", # mccabe
+    "D", # pydocstyle
     "E", # pycodestyle
     "F", # pyflakes
     "I", # isort
@@ -63,6 +64,8 @@ select = [
 [tool.ruff.lint.isort]
 required-imports = ["from __future__ import annotations"]
 
+[tool.ruff.lint.pydocstyle]
+convention = "google"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

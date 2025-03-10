@@ -1,278 +1,213 @@
-# Zen Generator
+# Zen Generator 🚀
 
-Zen Generator is a powerful CLI tool that improves the developer experience in creating and maintaining API functions and documentation. It provides bidirectional conversion between AsyncAPI specifications and Python code, with support for both pure Python and FastAPI implementations.
+A bidirectional Python code generator that converts between AsyncAPI 3.0 specifications and Python code (pure Python or FastAPI implementations).
 
-## Features
+## Features ✨
 
-- Generate AsyncAPI documentation (v3.0.0) from Python source files:
-  - Convert `functions.py` (containing functions) and `models.py` (containing models) into AsyncAPI specs
-  - Full support for complex Python types and None handling
+- Bidirectional conversion between [AsyncAPI 3.0](https://www.asyncapi.com/docs/reference/specification/v3.0.0) and Python code
+- Generate Python code from AsyncAPI 3.0 specifications:
+  - Pure Python implementations with type hints
+  - FastAPI endpoints with Pydantic models
+- Generate AsyncAPI 3.0 specifications from Python code
+- Automatic type inference and mapping
+- Support for both async and sync functions
 
-- Generate Python code from AsyncAPI documentation:
-  - Create `functions.py` with function signatures
-  - Create `models.py` with necessary model definitions
-  - Automatic type conversion and imports management
-
-- FastAPI Integration:
-  - Generate `models.py` with Pydantic models
-  - Generate `endpoints.py` with FastAPI route handlers
-  - Full support for async/sync operations
-
-**Regarding the `asyncapi v.3.0.0` standard, I used the `format=required` parameter in the response `payload` of a
-function to correctly handle the `None` case, as it is possible to have more than one "object" as a function response**,
-example
-
-```python
-def func_bar(foo: int) -> int | str | InterfaceBaz | None:
-    ...
-```
-
-## Installation
+## Installation 📦
 
 ```bash
 pip install zen-generator
 ```
 
-## Command Line Usage
+## Quick Start 🏃
 
-Zen Generator provides a CLI with several commands. To see all available commands:
-
-```bash
-zen-generator --help
-```
-
-For help with a specific command:
+Convert between AsyncAPI 3.0 specifications and Python code:
 
 ```bash
-zen-generator <command> --help
+# Generate FastAPI implementation from AsyncAPI spec
+zen-generator fastapi
+
+# Generate pure Python implementation from AsyncAPI spec  
+zen-generator pure-python 
+
+# Generate AsyncAPI spec from Python code
+zen-generator asyncapi-documentation
 ```
 
-### 1. Generate AsyncAPI Documentation
+### Command Line Interface
 
-Create AsyncAPI documentation from your Python files:
+The CLI is built with Typer and provides three main commands:
+
+**Usage**:
+
+```console
+$ [OPTIONS] COMMAND [ARGS]...
+```
+
+**Options**:
+
+- `--install-completion`: Install completion for the current shell.
+- `--show-completion`: Show completion for the current shell, to copy it or customize the installation.
+- `--help`: Show this message and exit.
+
+**Commands**:
+
+- `asyncapi-documentation`
+- `pure-python`
+- `fastapi`
+
+## `asyncapi-documentation`
+
+**Usage**:
+
+```console
+$ asyncapi-documentation [OPTIONS]
+```
+
+**Options**:
+
+- `--models-file PATH`: [default: models.py]
+- `--functions-file PATH`: [default: functions.py]
+- `--output-file PATH`: [default: asyncapi.yaml]
+- `--application-name TEXT`: [default: Zen]
+- `--help`: Show this message and exit.
+
+## `pure-python`
+
+**Usage**:
+
+```console
+$ pure-python [OPTIONS]
+```
+
+**Options**:
+
+- `--asyncapi-file PATH`: [default: asyncapi.yaml]
+- `--models-file PATH`: [default: models.py]
+- `--functions-file PATH`: [default: functions.py]
+- `--application-name TEXT`: [default: Zen]
+- `--is-async / --no-is-async`: [default: no-is-async]
+- `--help`: Show this message and exit.
+
+## `fastapi`
+
+**Usage**:
+
+```console
+$ fastapi [OPTIONS]
+```
+
+**Options**:
+
+- `--asyncapi-file PATH`: [default: asyncapi.yaml]
+- `--models-file PATH`: [default: models.py]
+- `--functions-file PATH`: [default: functions.py]
+- `--application-name TEXT`: [default: Zen]
+- `--is-async / --no-is-async`: [default: no-is-async]
+- `--help`: Show this message and exit.
+
+## Generated Code Examples 📝
+
+### Models (models.py)
+
+```python
+from __future__ import annotations
+from pydantic import BaseModel
+
+class UserModel(BaseModel):
+    id: int
+    name: str
+    email: str | None = None
+```
+
+### FastAPI Implementation (functions.py)
+
+```python
+from __future__ import annotations
+from fastapi import FastAPI
+from .models import UserModel
+
+app = FastAPI()
+
+@app.get("/users/{user_id}")
+async def get_user(user_id: int) -> UserModel:
+    ...
+```
+
+### Pure Python Implementation (functions.py)
+
+```python
+from __future__ import annotations
+from typing import Optional
+from .models import UserModel
+
+def get_user(user_id: int) -> UserModel:
+    ...
+```
+
+## Development Setup 🛠️
+
+Requirements:
+- Python 3.10+
+- uv (Python packaging toolchain)
 
 ```bash
-zen-generator asyncapi-documentation \
-    --models-file models.py \
-    --functions-file functions.py \
-    --output-file asyncapi.yaml \
-    --application-name "My App"
+# Install uv if not already installed
+pip install uv
+
+# Clone repository
+git clone https://github.com/WaYdotNET/zen-generator.git
+cd zen-generator
+
+# Create and activate virtual environment with uv
+uv venv
+source .venv/bin/activate  # On macOS/Linux
+# or
+.venv\Scripts\activate  # On Windows
+
+# Install dependencies with uv
+uv sync
+
+# Run tests
+python -m pytest
 ```
 
-Options:
-- `--models-file`: Path to your models file (default: models.py)
-- `--functions-file`: Path to your functions file (default: functions.py)
-- `--output-file`: Output path for AsyncAPI spec (default: asyncapi.yaml)
-- `--application-name`: Name of your application (default: "Zen")
+## Best Practices 💡
 
-### 2. Generate Python Code
+1. **AsyncAPI Specification**
+   - Follow [AsyncAPI 3.0](https://www.asyncapi.com/docs/reference/specification/v3.0.0) guidelines
+   - Define clear schema types
+   - Include comprehensive examples
+   - Use semantic versioning
 
-Create Python files from AsyncAPI documentation:
+2. **Code Generation**
+   - Review generated code for correctness
+   - Implement business logic in function stubs
+   - Keep generated files synchronized
+   - Use type hints consistently
 
-```bash
-zen-generator pure-python \
-    --asyncapi-file asyncapi.yaml \
-    --models-file models.py \
-    --functions-file functions.py \
-    --application-name "My App" \
-    --is-async
-```
+3. **Project Organization**
+   - Maintain clear separation between models and functions
+   - Follow standard Python package structure
+   - Implement proper error handling
 
-Options:
-- `--asyncapi-file`: Path to AsyncAPI spec (default: asyncapi.yaml)
-- `--models-file`: Output path for models (default: models.py)
-- `--functions-file`: Output path for functions (default: functions.py)
-- `--application-name`: Name of your application (default: "Zen")
-- `--is-async`: Generate async code (default: false)
-```
+## Contributing 🤝
 
-### 3. Generate FastAPI Code
+Contributions are welcome! Please:
 
-Create FastAPI endpoints and models from AsyncAPI documentation:
+1. Fork the repository
+2. Create a feature branch
+3. Commit your changes
+4. Push to the branch
+5. Submit a pull request
 
-```bash
-zen-generator fastapi \
-    --asyncapi-file asyncapi.yaml \
-    --models-file models.py \
-    --functions-file functions.py \
-    --application-name "My App" \
-    --is-async
-```
+## License 📄
 
-Options:
-- `--asyncapi-file`: Path to AsyncAPI spec (default: asyncapi.yaml)
-- `--models-file`: Output path for models (default: models.py)
-- `--functions-file`: Output path for functions (default: functions.py)
-- `--application-name`: Name of your application (default: "Zen")
-- `--is-async`: Generate async code (default: false)
+MIT License - see LICENSE file for details
 
-## Type Handling
+## Support 💬
 
-Zen Generator provides robust support for Python type annotations and their conversion to AsyncAPI schemas:
+- GitHub Issues: [Report bugs or suggest features](https://github.com/WaYdotNET/zen-generator/issues)
 
-- Full support for basic Python types (int, str, bool, etc.)
-- Support for complex types (Union, Optional, List, Dict)
-- Proper handling of None/Optional types using AsyncAPI's format=required parameter
-- Support for custom classes and TypedDict
-- Automatic conversion of Python type hints to AsyncAPI schemas and vice versa
-
-## Examples
-
-Here's a complete example demonstrating the bidirectional conversion between Python code and AsyncAPI specification:
-
-my_app.yaml
-
-```yaml
 ---
-asyncapi: 3.0.0
-info:
-  title: Oh My App
-  version: 0.0.1
-  description: 'some docstring
 
-    very nice app!!'
-channels:
-  foo:
-    $ref: '#/components/channels/foo'
-operations:
-  foo:
-    $ref: '#/components/operations/foo'
-components:
-  channels:
-    foo:
-      messages:
-        request:
-          $ref: '#/components/messages/foo_request'
-        response:
-          $ref: '#/components/messages/foo_response'
-  operations:
-    foo:
-      action: receive
-      description: "\n    Description of method foo\n    Args:\n\
-        \        bar (): bar something\n        kinds (): types of params\n\
-        \        other (): other\n\n    Returns:\n        I don't know what it returns\n\
-        \    "
-      channel:
-        $ref: '#/channels/foo'
-      messages:
-        - $ref: '#/channels/foo/messages/request'
-      reply:
-        channel:
-          $ref: '#/channels/foo'
-        messages:
-          - $ref: '#/channels/foo/messages/response'
-  messages:
-    foo_request:
-      title: Request params for foo
-      summary: ''
-      description: ''
-      payload:
-        type: object
-        required:
-          - bar
-          - kinds
-        properties:
-          bar:
-            oneOf:
-              - type: integer
-              - type: string
-              - $ref: '#/components/schemas/TaskBar'
-            description: bar is something
-          kinds:
-            type: array
-            items:
-              type: string
-            description: types of params
-          other:
-            oneOf:
-              - type: integer
-              - $ref: '#/components/schemas/FooBar'
-            description: other
-    foo_response:
-      title: Request params for foo
-      summary: ''
-      description: I don't know what it returns
-      payload:
-        type: array
-        items:
-          $ref: '#/components/schemas/FooBar'
-  schemas:
-    TaskBar:
-      type: object
-      base_class: Choices
-      required: [ ]
-      properties: { }
-    FooBar:
-      type: object
-      base_class: TypedDict
-      required:
-        - baz
-        - foo
-      properties:
-        env:
-          type: string
-        baz:
-          oneOf:
-            - $ref: '#/components/schemas/FooBar'
-            - type: array
-              items:
-                type: boolean
-            - type: integer
-        foo:
-          oneOf:
-            - type: string
-            - type: object
-```
-
-proxy.py
-
-```python
-"""some docstring
-very nice app!!"""
-from __future__ import annotations
-import logging
-from .models import TaskBar, FooBar
-
-logger = logging.getLogger("foo")
-
-
-def foo(
-        bar: int | str | TaskBar, kinds: list[str], other: int | FooBar | None
-) -> list[FooBar] | None:
-    """
-    Description of method foo
-    Args:
-        bar (): bar something
-        kinds (): types of params
-        other (): other
-
-    Returns:
-        I don't know what it returns
-    "
-```
-
-## Contributing
-
-Contributions are welcome! Feel free to open issues or submit pull requests.
-
-## License
-
-MIT License
-
-interfaces.py
-
-```python
-from __future__ import annotations
-from typing import TypedDict
-from utils.enums import Choices
-
-
-class TaskBar(Choices):
-    pass
-
-
-class FooBar(TypedDict):
-    env: str | None
-    baz: FooBar | list[bool] | int
-    foo: str | object
-```
+Made with ❤️ by [WaYdotNET](https://github.com/WaYdotNET)

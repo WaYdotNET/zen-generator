@@ -1,3 +1,7 @@
+"""Command line interface for Zen Generator.
+
+This module contains the command line interface for Zen Generator.
+"""
 from __future__ import annotations
 
 from pathlib import Path
@@ -12,6 +16,7 @@ from zen_generator.generators.python import Generator
 app = typer.Typer()
 
 
+
 @app.command()
 def asyncapi_documentation(
     models_file: Annotated[Path, typer.Option()] = Path("models.py"),
@@ -19,6 +24,18 @@ def asyncapi_documentation(
     output_file: Annotated[Path, typer.Option()] = Path("asyncapi.yaml"),
     application_name: Annotated[str, typer.Option()] = "Zen",
 ):
+    """Generate AsyncAPI documentation from source code.
+
+    Generate the AsyncAPI documentation from the source code in the models_file
+    and functions_file. The output will be a yaml file saved in the output_file
+    with the name of the application as title.
+
+    Args:
+        models_file: The path to the file containing the models.
+        functions_file: The path to the file containing the functions.
+        output_file: The path to the output file.
+        application_name: The name of the application.
+    """
     print("Preparing to generate the documentation")
     if models_file.is_file() and functions_file.is_file():
         generate_asyncapi_from_files(models_file, functions_file, output_file, application_name)
@@ -38,6 +55,19 @@ def pure_python(
     application_name: Annotated[str, typer.Option()] = "Zen",
     is_async: Annotated[bool, typer.Option()] = False,
 ):
+    """Generate pure Python models and functions from AsyncAPI file.
+
+    Generate the models and functions from the AsyncAPI file in the asyncapi_file.
+    The output will be two files, one for the models and one for the functions,
+    saved in the models_file and functions_file respectively.
+
+    Args:
+        asyncapi_file: The path to the AsyncAPI file.
+        models_file: The path to the output file for the models.
+        functions_file: The path to the output file for the functions.
+        application_name: The name of the application.
+        is_async: Whether the generated functions should be async or not.
+    """
     print("Preparing to generate models and functions from the asyncapi file")
     if asyncapi_file.is_file():
         generator = Generator.pure_python_generator()
@@ -58,6 +88,20 @@ def fastapi(
     application_name: Annotated[str, typer.Option()] = "Zen",
     is_async: Annotated[bool, typer.Option()] = False,
 ):
+    """Generate FastAPI models and functions from AsyncAPI file.
+
+    Generate the models and functions from the AsyncAPI file in the asyncapi_file.
+    The output will be two files, one for the models and one for the functions,
+    saved in the models_file and functions_file respectively.
+
+    Args:
+        asyncapi_file: The path to the AsyncAPI file.
+        models_file: The path to the output file for the models.
+        functions_file: The path to the output file for the functions.
+        application_name: The name of the application.
+        is_async: Whether the generated functions should be async or not.
+
+    """
     print("Preparing to generate models and functions from the asyncapi file")
     if asyncapi_file.is_file():
         generator = Generator.fastapi_generator()
@@ -72,8 +116,30 @@ def fastapi(
 
 @app.callback()
 def main():
+    """Entry point of the CLI.
+
+    This function is the entry point of the CLI. It is a simple wrapper around
+    the `typer.run` function that calls the `app` function with the arguments
+    passed to it.
+
+    Returns:
+        None
+    """
     print("Welcome to the zen generator")
 
 
 if __name__ == "__main__":
+    """Entry point of the CLI.
+
+    This function is the entry point of the CLI. It is a simple wrapper around
+    the `typer.run` function that calls the `app` function with the arguments
+    passed to it.
+
+    Args:
+        None
+
+    Returns:
+        None
+
+    """
     app()

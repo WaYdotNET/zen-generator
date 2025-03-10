@@ -1,3 +1,9 @@
+"""This module contains utilities for generating AsyncAPI documents.
+
+The functions in this module provide a higher-level interface than the `ast` module,
+and are used to generate Python code from AsyncAPI specifications.
+
+"""
 from __future__ import annotations
 
 from pathlib import Path
@@ -14,12 +20,15 @@ def create_async_api_content(
     functions_docstring: str | None,
     functions_parsed: dict[str, Any],
 ):
-    """
-    Create an AsyncAPI document from the provided models schema and parsed functions content.
+    """Generate the AsyncAPI document from the provided models and functions content.
+
+    The function takes in the application name, the models schema, the functions docstring
+    and the functions parsed content and generates the AsyncAPI document.
+
     :param app_name: The name of the application
-    :param models_schema: The schema of the models
-    :param functions_docstring: The docstring of the functions
-    :param functions_parsed: The parsed functions content
+    :param models_schema: The models schema
+    :param functions_docstring: The functions docstring
+    :param functions_parsed: The functions parsed content
     :return: The generated AsyncAPI document
     """
     channels = {}
@@ -76,10 +85,13 @@ def create_async_api_content(
 
 
 def generate_asyncapi_schema(model_name: str, attributes: dict[str, Any]) -> dict[str, Any]:
-    """
-    Generate an AsyncAPI schema for the specified model.
+    """Generate an AsyncAPI schema for a given model.
+
+    The function takes in a model name and a dictionary of attributes
+    and returns a dictionary containing the AsyncAPI schema.
+
     :param model_name: The name of the model
-    :param attributes: The attributes of the model
+    :param attributes: The model attributes
     :return: The generated AsyncAPI schema
     """
     properties = {}
@@ -116,17 +128,16 @@ def generate_asyncapi_document(
     models: dict[str, dict[str, Any]],
     servers: Optional[dict[str, dict[str, Any]]] = None,
 ) -> dict[str, Any]:
-    """
-    Generate an AsyncAPI document from the provided models and metadata.
+    """Generate an AsyncAPI document from the provided model and function definitions.
 
-    This function creates a well-formed AsyncAPI document with the specified title, version,
-    and model schemas.
+    Args:
+        title (str): The title of the AsyncAPI document
+        version (str): The version of the AsyncAPI document
+        models (dict[str, dict[str, Any]]): The models as a dictionary of dictionaries
+        servers (dict[str, dict[str, Any]], optional): The servers as a dictionary of dictionaries
 
-    :param title: The title of the AsyncAPI document
-    :param version: The version of the API
-    :param models: A dictionary mapping model names to their attributes
-    :param servers: Optional dictionary of server configurations to include in the document
-    :return: A dictionary representing the complete AsyncAPI document
+    Returns:
+        dict[str, Any]: The generated AsyncAPI document
     """
     components: dict[str, dict[str, Any]] = {"schemas": {}}
     for model_name, attributes in models.items():
@@ -145,13 +156,16 @@ def generate_asyncapi_document(
 
 
 def generate_asyncapi_from_files(models_file: Path, functions_file: Path, output_path: Path, app_name: str) -> None:
-    """
-    Generate an AsyncAPI document from the provided model and function files.
-    :param models_file: The path to the file containing data models definitions
-    :param functions_file: The path to the file containing function definitions
-    :param output_path: The path where to save the generated AsyncAPI document
-    :param app_name: The name of the application to be included in the document
-    :return: None
+    """Generate an AsyncAPI document from the provided model and function definitions.
+
+    Args:
+        models_file (Path): The path to the file containing the model definitions.
+        functions_file (Path): The path to the file containing the function definitions.
+        output_path (Path): The path where the generated AsyncAPI document will be saved.
+        app_name (str): The name of the application.
+
+    Returns:
+        None
     """
     models_ast = parse_python_file_to_ast(models_file)
     models_schema = components_schemas(models_ast)

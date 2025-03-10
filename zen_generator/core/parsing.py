@@ -1,3 +1,9 @@
+"""This module contains utilities for parsing Python code.
+
+The functions in this module provide a higher-level interface than the `ast` module,
+and are used to generate Python code from AsyncAPI specifications.
+
+"""
 from __future__ import annotations
 
 import re
@@ -15,10 +21,13 @@ ARGS_DESCRIPTION_PATTERN = r"\s*([\w_]+)\s*\(\)\s*:\s*([^(\n)]+)"
 def function_to_asyncapi_schemas(
     function_node: FunctionDef | AsyncFunctionDef,
 ) -> tuple[dict[str, Any], dict[str, Any]]:
-    """
-    Parse a function node to a tuple with the request and response schemas
-    :param function_node: Function node
-    :return: Tuple with the request and response schemas
+    """Convert a function definition to AsyncAPI request and response schemas.
+
+    Args:
+        function_node: The function definition node
+
+    Returns:
+        A tuple containing the request and response schemas for the function
     """
     name = function_node.name
     docstring = get_docstring(function_node) or ""
@@ -43,13 +52,16 @@ def _create_request_schema(
     docstring: str,
     parameters_description: dict,
 ) -> dict[str, Any]:
-    """
-    Create the request schema based on the function parameters
-    :param function_node: Function node
-    :param name: Function name
-    :param docstring: Function docstring
-    :param parameters_description: Parameters description
-    :return: Request schema
+    """Convert a function definition to AsyncAPI request schema.
+
+    Args:
+        function_node: The function definition node
+        name: The name of the function
+        docstring: The docstring of the function
+        parameters_description: A dictionary of parameter descriptions
+
+    Returns:
+        A dictionary representing the request schema
     """
     request_payload: dict[str, Any] = {
         "type": "object",
@@ -86,13 +98,16 @@ def _create_response_schema(
     docstring: str,
     returns_match: re.Match | None,
 ) -> dict[str, Any]:
-    """
-    Create the response schema based on the function return type
-    :param function_node: Function node
-    :param name: Function name
-    :param docstring: Function docstring
-    :param returns_match: Returns match
-    :return: Response schema
+    """Convert a function definition to AsyncAPI response schema.
+
+    Args:
+        function_node: The function definition node
+        name: The name of the function
+        docstring: The docstring of the function
+        returns_match: A regular expression match object for the "Returns" section
+
+    Returns:
+        A dictionary representing the response schema
     """
     response_description = ""
     if returns_match:
@@ -119,10 +134,15 @@ def _create_response_schema(
 
 
 def function_content_reader(tree: Module | None) -> tuple[str | None, dict[str, Any]]:
-    """
-    Parse a functions module to a dictionary
-    :param tree: Python AST
-    :return: Tuple with the docstring and the functions dictionary
+    """Read function content from a tree of nodes.
+
+    Args:
+        tree: The root node of the tree
+
+    Returns:
+        A tuple containing the docstring of the tree and a dictionary of functions
+        where the keys are the names of the functions and the values are dictionaries
+        containing the request and response schemas
     """
     functions_docstring = get_docstring(tree) if tree else ""
     functions_to_async: dict[str, Any] = {}

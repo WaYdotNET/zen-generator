@@ -1,3 +1,9 @@
+"""This module contains utilities for generating Python code from AsyncAPI specifications.
+
+The functions in this module provide a higher-level interface than the `ast` module,
+and are used to generate Python code from AsyncAPI specifications.
+
+"""
 from __future__ import annotations
 
 from ast import (
@@ -33,6 +39,20 @@ from zen_generator.core.io import load_yaml, save_python_file
 
 @dataclass
 class BasePythonGenerator:
+    """Base class for Python generators.
+
+    This class provides a basic interface for generating Python code from
+    AsyncAPI specifications.
+
+    Attributes:
+        asyncapi_file (Path): The path to the AsyncAPI file.
+        output_file (Path): The path to the generated Python file.
+        models_file (Path): The path to the generated models file.
+        override_base_class (str | None): The base class to override in the generated code.
+        decorator_list (Sequence[expr]): A list of decorators to apply to the generated class.
+        additional_imports (Sequence[stmt | ImportFrom]): Additional imports to include in the generated code.
+        additional_assingments (Sequence[stmt]): Additional assignments to include in the generated code.
+    """
     models_ast: list[stmt] = field(init=False, repr=False, default_factory=list)
     fuctions_ast: list[stmt] = field(init=False, repr=False, default_factory=list)
     additional_imports: Sequence[stmt | ImportFrom] = field(default_factory=list)
@@ -44,6 +64,23 @@ class BasePythonGenerator:
     is_async: bool = False
 
     def __post__init__(self) -> None:
+        """Generate Python files from an AsyncAPI specification.
+
+        This method takes in the path to the AsyncAPI file, the path to the generated
+        models file, the path to the generated functions file and the name of the
+        application. Optionally, it takes in a boolean indicating whether the generated
+        code should be asynchronous.
+
+        Args:
+            source_file (Path): The path to the AsyncAPI file.
+            models_file (Path): The path to the generated models file.
+            functions_file (Path): The path to the generated functions file.
+            app_name (str): The name of the application.
+            is_async (bool): Whether the generated code should be asynchronous.
+
+        Returns:
+            None
+        """
         self.models_ast.extend(
             [
                 ImportFrom(module="__future__", names=[alias(name="annotations")], level=0),
@@ -58,14 +95,22 @@ class BasePythonGenerator:
         app_name: str,
         is_async: bool = False,
     ) -> None:
-        """
-        Generate the Python files from the AsyncAPI specification
-        :param source_file: The source file
-        :param models_file: The models file
-        :param functions_file: The functions file
-        :param app_name: The name of the application
-        :param is_async: Whether the function is async
-        :return: None
+        """Generate Python files from an AsyncAPI specification.
+
+        This method takes in the path to the AsyncAPI file, the path to the generated
+        models file, the path to the generated functions file and the name of the
+        application. Optionally, it takes in a boolean indicating whether the generated
+        code should be asynchronous.
+
+        Args:
+            source_file: The path to the AsyncAPI file.
+            models_file: The path to the generated models file.
+            functions_file: The path to the generated functions file.
+            app_name: The name of the application.
+            is_async: Whether the generated code should be asynchronous.
+
+        Returns:
+            None
         """
         self.is_async = is_async
         self.source_content = load_yaml(source_file) or {}
@@ -77,10 +122,16 @@ class BasePythonGenerator:
         save_python_file(self.fuctions_ast, functions_file)
 
     def _add_logger_setup(self, app_name: str) -> None:
-        """
-        Add logger setup to the function file
-        :param app_name: The name of the application
-        :return: None
+        """Add logger setup to the module.
+
+        This method adds a logger setup to the module, which creates a logger
+        with the name of the application and sets up a basic configuration.
+
+        Args:
+            app_name (str): The name of the application.
+
+        Returns:
+            None
         """
         self.fuctions_ast.append(
             Assign(
@@ -98,10 +149,13 @@ class BasePythonGenerator:
         )
 
     def _add_docstring(self) -> None:
-        """
-        Add the docstring to the function
-        :param source_content:  The source content
-        :return: None
+        """Add docstring to the module.
+
+        This method adds a docstring to the module, which contains the description
+        of the application.
+
+        Returns:
+            None
         """
         try:
             docstring = self.source_content["info"]["description"]
@@ -110,10 +164,17 @@ class BasePythonGenerator:
             pass
 
     def _add_models_import(self, module_name: str = "models") -> None:
-        """
-        Add import for models
-        :param models: The models
-        :return: None
+        """Add import statement for the models module.
+
+        This method adds an import statement to the module, which imports all
+        the models defined in the `models` module.
+
+        Args:
+            module_name (str): The name of the module to import. Defaults to
+                "models".
+
+        Returns:
+            None
         """
         if self.component_schemas.items():
             names = [alias(name=f"{model}") for model in self.component_schemas]
@@ -125,12 +186,14 @@ class BasePythonGenerator:
             self.fuctions_ast.append(import_from)
 
     def generate_models_ast(self) -> None:
-        """
-        Generate the AST for the models
-        :param schemas: The schemas
-        :param include_typing_import: Whether to include typing import
-        :param include_enums_import: Whether to include enums import
-        :return: The AST
+        """Generate the models as a sequence of AST nodes.
+
+        This method generates the models as a sequence of AST nodes, which
+        correspond to the classes defined in the `models` module. The classes are
+        generated from the `components/schemas` field of the AsyncAPI document.
+
+        Returns:
+            None
         """
         if not self.component_schemas:
             return
@@ -175,6 +238,22 @@ class BasePythonGenerator:
         module_name: str = "models",
         logger: bool = True,
     ) -> None:
+        """Generate the functions as a sequence of AST nodes.
+
+        This method generates the functions as a sequence of AST nodes, which
+        correspond to the functions defined in the `functions` module. The functions
+        are generated from the `components/messages` field of the AsyncAPI document.
+
+        Args:
+            app_name (str): The name of the application.
+            module_name (str, optional): The name of the module that contains the
+                models. Defaults to "models".
+            logger (bool, optional): Whether to add logger setup code. Defaults to
+                True.
+
+        Returns:
+            None
+        """
         self._add_docstring()
 
         self.fuctions_ast.append(ImportFrom(module="__future__", names=[alias(name="annotations")], level=0))
@@ -191,6 +270,19 @@ class BasePythonGenerator:
         self._add_function_definitions()
 
     def _add_function_definitions(self) -> None:
+        """Generate the functions as a sequence of AST nodes.
+
+        This method generates the functions as a sequence of AST nodes, which
+        correspond to the functions defined in the `functions` module. The functions
+        are generated from the `components/messages` field of the AsyncAPI document.
+
+        Args:
+            components (dict): The components field of the AsyncAPI document.
+            functions (dict): The functions field of the AsyncAPI document.
+
+        Returns:
+            None
+        """
         components = self.source_content.get("components", {})
         functions = components.get("operations", {})
 
@@ -206,6 +298,18 @@ class BasePythonGenerator:
             self.fuctions_ast.append(func_def)
 
     def _process_decorators(self, func_name: str) -> list[expr]:
+        """Process decorators for a function.
+
+        Process the decorator list for a function by replacing the `{func_name}`
+        placeholder with the actual function name and converting the resulting
+        string back to an AST node.
+
+        Args:
+            func_name (str): The name of the function.
+
+        Returns:
+            list[expr]: The processed decorator nodes.
+        """
         processed_decorators = []
         for dec in self.decorator_list:
             # Convert decorator to string, replace placeholder and convert back to AST
@@ -220,11 +324,18 @@ class BasePythonGenerator:
         return processed_decorators
 
     def _build_function_args(self, components: dict[str, Any], func_name: str) -> list[arg]:
-        """
-        Build function arguments from request parameters
-        :param components: The components
-        :param func_name: The function name
-        :return: The function arguments
+        """Generate function arguments from the components/messages field of the AsyncAPI document.
+
+        This function generates the function arguments from the
+        components/messages field of the AsyncAPI document. The function
+        arguments are generated from the payload properties of the request message.
+
+        Args:
+            components (dict): The components field of the AsyncAPI document.
+            func_name (str): The name of the function.
+
+        Returns:
+            list[arg]: The generated function arguments.
         """
         function_args: list[arg] = []
         request_params = components.get("messages", {}).get(f"{func_name}_request", {}).get("payload", {})
@@ -244,11 +355,18 @@ class BasePythonGenerator:
         return function_args
 
     def _build_return_annotation(self, components: dict[str, Any], func_name: str) -> Any:
-        """
-        Build return annotation from response parameters
-        :param components: The components
-        :param func_name: The function name
-        :return: The return annotation
+        """Generate the return annotation of the function from the components/messages field of the AsyncAPI document.
+
+        This function generates the return annotation of the function from the
+        components/messages field of the AsyncAPI document. The return annotation
+        is generated from the payload properties of the response message.
+
+        Args:
+            components (dict): The components field of the AsyncAPI document.
+            func_name (str): The name of the function.
+
+        Returns:
+            Any: The generated return annotation.
         """
         response = components.get("messages", {}).get(f"{func_name}_response", {})
         response_param = response.get("payload", {})

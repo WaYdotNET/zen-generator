@@ -1,3 +1,9 @@
+"""This module contains utilities for working with Abstract Syntax Trees (ASTs).
+
+The functions in this module provide a higher-level interface than the `ast` module,
+and are used to generate Python code from AsyncAPI specifications.
+
+"""
 from __future__ import annotations
 
 from ast import (
@@ -40,10 +46,13 @@ SCHEMA_PREFIX = "#/components/schemas/"
 def convert_ast_annotation_to_dict(
     ast_annotation: AnnotationNode,
 ) -> list[dict[str, Any]]:
-    """
-    Convert an AST annotation to a dictionary
-    :param ast_annotation: AST annotation
-    :return: List of dictionaries
+    """Convert an AST annotation to a dictionary.
+
+    Args:
+        ast_annotation: The AST annotation
+
+    Returns:
+        A dictionary containing information about the annotation
     """
     match ast_annotation:
         case Subscript():
@@ -80,10 +89,13 @@ def convert_ast_annotation_to_dict(
 def convert_annotations_to_asyncapi_schemas(
     input_annotation: list[dict[str, Any]],
 ) -> dict[str, Any]:
-    """
-    Convert Python type annotations to AsyncAPI schema format
-    :param input_annotation: List of dictionaries representing parsed annotations
-    :return: AsyncAPI schema representation
+    """Convert a list of dictionaries (result of `convert_ast_annotation_to_dict`) to an AsyncAPI schema.
+
+    Args:
+        input_annotation: A list of dictionaries containing the annotation information.
+
+    Returns:
+        A dictionary containing the AsyncAPI schema.
     """
     required = True
     schema_items: list[dict[str, Any]] = []
@@ -118,10 +130,13 @@ def convert_annotations_to_asyncapi_schemas(
 
 
 def parse_class(node: ClassDef) -> dict[str, Any]:
-    """
-    Parse a class node to a dictionary
-    :param node: Class node
-    :return: Dictionary
+    """Generate a dictionary containing the AsyncAPI schema for a ClassDef node.
+
+    Args:
+        node: The ClassDef node to generate the schema for.
+
+    Returns:
+        A dictionary containing the AsyncAPI schema.
     """
     try:
         base = node.bases[0]
@@ -148,10 +163,13 @@ def parse_class(node: ClassDef) -> dict[str, Any]:
 
 
 def convert_ast_to_code(ast_nodes: list[Any]) -> str:
-    """
-    Convert AST nodes to Python code
-    :param ast_nodes: List of AST nodes
-    :return: Python code
+    """Converts an AST tree to a formatted string of Python code.
+
+    Args:
+        ast_nodes: A list of AST nodes to convert.
+
+    Returns:
+        A formatted string of Python code.
     """
     module = Module(body=ast_nodes, type_ignores=[])
     raw_code = unparse(fix_missing_locations(module))
@@ -159,10 +177,13 @@ def convert_ast_to_code(ast_nodes: list[Any]) -> str:
 
 
 def components_schemas(tree: AST | None) -> dict[str, Any]:
-    """
-    Parse AST tree to components schemas
-    :param tree: AST tree
-    :return: Components schemas
+    """Generates a dictionary containing the component schemas from an AST tree.
+
+    Args:
+        tree: The AST tree to parse. If None, an empty dictionary is returned.
+
+    Returns:
+        A dictionary containing the component schemas.
     """
     result: dict[str, Any] = {}
     if not tree:
@@ -175,6 +196,15 @@ def components_schemas(tree: AST | None) -> dict[str, Any]:
 
 
 def get_component_schemas(source: dict[str, Any] | None) -> dict[str, Any] | None:
+    """Gets the component schemas from an AsyncAPI dictionary.
+
+    Args:
+        source: The AsyncAPI dictionary. If None, None is returned.
+
+    Returns:
+        The component schemas as a dictionary or None if the source does not contain
+        the component schemas.
+    """
     source = source or {}
     try:
         return source["components"]["schemas"]
@@ -185,6 +215,24 @@ def get_component_schemas(source: dict[str, Any] | None) -> dict[str, Any] | Non
 def generate_bin_op(
     values: Sequence[str | Name | Subscript | Constant | BinOp | None],
 ) -> Name | Subscript | Constant | BinOp | None:
+    """Generates a binary operation from a sequence of values.
+
+    If the sequence is empty, returns None.
+    If the sequence contains only one value, returns the value.
+    If the sequence contains more than one value, returns a binary operation
+    where the left operand is the result of the recursive call with the
+    sequence of values excluding the last one, and the right operand is the
+    last value in the sequence.
+
+    The binary operation is generated with the BitOr operator.
+
+    Args:
+        values: A sequence of values to generate the binary operation from.
+
+    Returns:
+        A Name, Subscript, Constant, BinOp or None representing the generated
+        binary operation.
+    """
     if not values:
         return None
 
@@ -208,12 +256,14 @@ def generate_bin_op(
 def convert_property(
     pro: dict[str, Any] | None,
 ) -> Name | Subscript | Constant | BinOp | None:
-    """
-    Convert an AsyncAPI property to an AST node
-    :param pro: AsyncAPI property
-    :return: AST node
-    """
+    """Converts an AsyncAPI property to an AST node.
 
+    Args:
+        pro: The AsyncAPI property to convert
+
+    Returns:
+        The AST node representing the property
+    """
     match pro:
         case None:
             return Constant(value=None)
@@ -232,10 +282,14 @@ def convert_property(
 
 
 def _convert_array_property(pro: dict[str, Any]) -> Subscript:
-    """
-    Convert an AsyncAPI array property to an AST node
-    :param pro: AsyncAPI array property
-    :return: AST node
+    """Convert an AsyncAPI array property to an AST node.
+
+    Args:
+        pro: The AsyncAPI array property to convert
+
+    Returns:
+        The AST Subscript
+
     """
     items = pro.get("items", {})
 
@@ -261,15 +315,19 @@ def create_ast_function_definition(
     is_async: bool = False,
     decorator_list: list[expr] | None = None,
 ) -> FunctionDef | AsyncFunctionDef:
-    """
-    Create a function definition AST node.
-    :param function_name:  The name of the function
-    :param function_arguments:  The arguments of the function
-    :param docstring:  The docstring of the function
-    :param return_annotation: The return annotation of the function
-    :param is_async:  Whether the function is async
-    :param decorator_list: The list of decorators for the function
-    :return:  The function definition AST node
+    """Create a new AST function definition node.
+
+    Args:
+        function_name: The name of the function
+        function_arguments: The arguments of the function
+        docstring: The docstring of the function
+        return_annotation: The return annotation of the function
+        is_async: Whether the function is async
+        decorator_list: The list of decorators for the function
+
+    Returns:
+        The AST function definition node
+
     """
     decorator_list = decorator_list or []
     body: list[stmt] = [Expr(value=Constant(value=Ellipsis))]

@@ -1,15 +1,11 @@
-"""This module contains utilities for generating AsyncAPI documents.
+"""This module contains utilities for generating AsyncAPI documents."""
 
-The functions in this module provide a higher-level interface than the `ast` module,
-and are used to generate Python code from AsyncAPI specifications.
-
-"""
 from __future__ import annotations
 
 from pathlib import Path
 from typing import Any, Optional
 
-from zen_generator.core.ast_utils import components_schemas, convert_annotations_to_asyncapi_schemas
+from zen_generator.core.ast_utils import convert_annotations_to_asyncapi_schemas, generate_component_schemas
 from zen_generator.core.io import parse_python_file_to_ast, save_yaml_file
 from zen_generator.core.parsing import function_content_reader
 
@@ -168,7 +164,7 @@ def generate_asyncapi_from_files(models_file: Path, functions_file: Path, output
         None
     """
     models_ast = parse_python_file_to_ast(models_file)
-    models_schema = components_schemas(models_ast)
+    models_schema = generate_component_schemas(models_ast)
 
     functions_ast = parse_python_file_to_ast(functions_file)
     functions_docstring, functions_parsed = function_content_reader(functions_ast)

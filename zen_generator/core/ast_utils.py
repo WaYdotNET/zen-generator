@@ -1,9 +1,5 @@
-"""This module contains utilities for working with Abstract Syntax Trees (ASTs).
+"""This module contains utilities for working with Abstract Syntax Trees (ASTs)."""
 
-The functions in this module provide a higher-level interface than the `ast` module,
-and are used to generate Python code from AsyncAPI specifications.
-
-"""
 from __future__ import annotations
 
 from ast import (
@@ -43,16 +39,18 @@ AnnotationNode: TypeAlias = AST | Subscript | List | Name | BinOp | Constant | T
 SCHEMA_PREFIX = "#/components/schemas/"
 
 
-def convert_ast_annotation_to_dict(
+def parse_type_annotation(
     ast_annotation: AnnotationNode,
 ) -> list[dict[str, Any]]:
-    """Convert an AST annotation to a dictionary.
+    """Parse an AST type annotation node into a list of type descriptions.
 
     Args:
-        ast_annotation: The AST annotation
+        ast_annotation: The AST annotation node to parse (Subscript, Name, BinOp, etc.)
 
     Returns:
-        A dictionary containing information about the annotation
+        List of dictionaries describing the type structure, each containing:
+        - slice: The container type (list, dict, etc.) or None
+        - value: The contained type name or None
     """
     match ast_annotation:
         case Subscript():
@@ -64,7 +62,7 @@ def convert_ast_annotation_to_dict(
                 ]
             elif kind == "list":
                 if isinstance(ast_annotation.slice, (Tuple, Subscript)):
-                    value = convert_ast_annotation_to_dict(ast_annotation.slice)
+                    value = parse_type_annotation(ast_annotation.slice)
                 elif hasattr(ast_annotation.slice, "id"):
                     value = ast_annotation.slice.id
                 else:
@@ -77,8 +75,8 @@ def convert_ast_annotation_to_dict(
         case Name():
             return [{"slice": None, "value": ast_annotation.id}]
         case BinOp():
-            left_type = convert_ast_annotation_to_dict(ast_annotation.left)
-            right_type = convert_ast_annotation_to_dict(ast_annotation.right)
+            left_type = parse_type_annotation(ast_annotation.left)
+            right_type = parse_type_annotation(ast_annotation.right)
             return left_type + right_type
         case Constant() if ast_annotation.value is None:
             return [{"slice": None, "value": None}]
@@ -129,7 +127,7 @@ def convert_annotations_to_asyncapi_schemas(
     return {"required": required, "properties": properties}
 
 
-def parse_class(node: ClassDef) -> dict[str, Any]:
+def generate_class_schema(node: ClassDef) -> dict[str, Any]:
     """Generate a dictionary containing the AsyncAPI schema for a ClassDef node.
 
     Args:
@@ -150,7 +148,7 @@ def parse_class(node: ClassDef) -> dict[str, Any]:
     for class_element in node.body:
         if isinstance(class_element, AnnAssign) and isinstance(class_element.target, Name):
             property_name = class_element.target.id
-            items = convert_ast_annotation_to_dict(class_element.annotation)
+            items = parse_type_annotation(class_element.annotation)
             conv = convert_annotations_to_asyncapi_schemas(items)
             if conv.get("required"):
                 required.append(property_name)
@@ -162,7 +160,7 @@ def parse_class(node: ClassDef) -> dict[str, Any]:
     return schema
 
 
-def convert_ast_to_code(ast_nodes: list[Any]) -> str:
+def generate_code_from_ast(ast_nodes: list[Any]) -> str:
     """Converts an AST tree to a formatted string of Python code.
 
     Args:
@@ -176,7 +174,7 @@ def convert_ast_to_code(ast_nodes: list[Any]) -> str:
     return format_python_code(raw_code)
 
 
-def components_schemas(tree: AST | None) -> dict[str, Any]:
+def generate_component_schemas(tree: AST | None) -> dict[str, Any]:
     """Generates a dictionary containing the component schemas from an AST tree.
 
     Args:
@@ -191,7 +189,7 @@ def components_schemas(tree: AST | None) -> dict[str, Any]:
 
     for node in walk(tree):
         if isinstance(node, ClassDef):
-            result[node.name] = parse_class(node)
+            result[node.name] = generate_class_schema(node)
     return result
 
 
@@ -216,15 +214,6 @@ def generate_bin_op(
     values: Sequence[str | Name | Subscript | Constant | BinOp | None],
 ) -> Name | Subscript | Constant | BinOp | None:
     """Generates a binary operation from a sequence of values.
-
-    If the sequence is empty, returns None.
-    If the sequence contains only one value, returns the value.
-    If the sequence contains more than one value, returns a binary operation
-    where the left operand is the result of the recursive call with the
-    sequence of values excluding the last one, and the right operand is the
-    last value in the sequence.
-
-    The binary operation is generated with the BitOr operator.
 
     Args:
         values: A sequence of values to generate the binary operation from.
@@ -253,7 +242,7 @@ def generate_bin_op(
             return left or right
 
 
-def convert_property(
+def convert_asyncapi_property_to_ast_node(
     pro: dict[str, Any] | None,
 ) -> Name | Subscript | Constant | BinOp | None:
     """Converts an AsyncAPI property to an AST node.
@@ -268,27 +257,28 @@ def convert_property(
         case None:
             return Constant(value=None)
         case {"type": "array"}:
-            return _convert_array_property(pro)
+            return _generate_subscript_from_property(pro)
         case {"type": type_value}:
             return Name(id=convert_asyncapi_to_python(type_value), ctx=Load())
         case {"$ref": ref_value}:
             ref_name = ref_value.replace(SCHEMA_PREFIX, "")
             return Name(id=convert_asyncapi_to_python(ref_name), ctx=Load())
         case {"oneOf": one_of_values}:
-            type_nodes = [convert_property(one_of) for one_of in one_of_values]
+            type_nodes = [convert_asyncapi_property_to_ast_node(one_of) for one_of in one_of_values]
             return generate_bin_op(type_nodes)
         case _:
             return Constant(value=None)
 
 
-def _convert_array_property(pro: dict[str, Any]) -> Subscript:
-    """Convert an AsyncAPI array property to an AST node.
+def _generate_subscript_from_property(pro: dict[str, Any]) -> Subscript:
+    """enerate a Subscript node representing a list type from an AsyncAPI array property.
 
     Args:
-        pro: The AsyncAPI array property to convert
+        pro: Dictionary describing the array property, which may include
+            a reference ($ref) or a type field in its "items" section.
 
     Returns:
-        The AST Subscript
+        The AST Subscript representing a list of the derived item type
 
     """
     items = pro.get("items", {})

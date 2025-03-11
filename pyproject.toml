@@ -55,7 +55,6 @@ unfixable = []
 select = [
     "B", # flake8-bugbear
     "C9", # mccabe
-    "D", # pydocstyle
     "E", # pycodestyle
     "F", # pyflakes
     "I", # isort

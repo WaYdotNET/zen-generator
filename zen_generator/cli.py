@@ -1,7 +1,3 @@
-"""Command line interface for Zen Generator.
-
-This module contains the command line interface for Zen Generator.
-"""
 from __future__ import annotations
 
 from pathlib import Path
@@ -16,14 +12,13 @@ from zen_generator.generators.python import Generator
 app = typer.Typer()
 
 
-
 @app.command()
 def asyncapi_documentation(
     models_file: Annotated[Path, typer.Option()] = Path("models.py"),
     functions_file: Annotated[Path, typer.Option()] = Path("functions.py"),
     output_file: Annotated[Path, typer.Option()] = Path("asyncapi.yaml"),
     application_name: Annotated[str, typer.Option()] = "Zen",
-):
+) -> None:
     """Generate AsyncAPI documentation from source code.
 
     Generate the AsyncAPI documentation from the source code in the models_file
@@ -54,7 +49,7 @@ def pure_python(
     functions_file: Annotated[Path, typer.Option()] = Path("functions.py"),
     application_name: Annotated[str, typer.Option()] = "Zen",
     is_async: Annotated[bool, typer.Option()] = False,
-):
+) -> None:
     """Generate pure Python models and functions from AsyncAPI file.
 
     Generate the models and functions from the AsyncAPI file in the asyncapi_file.
@@ -87,7 +82,7 @@ def fastapi(
     functions_file: Annotated[Path, typer.Option()] = Path("functions.py"),
     application_name: Annotated[str, typer.Option()] = "Zen",
     is_async: Annotated[bool, typer.Option()] = False,
-):
+) -> None:
     """Generate FastAPI models and functions from AsyncAPI file.
 
     Generate the models and functions from the AsyncAPI file in the asyncapi_file.
@@ -115,31 +110,9 @@ def fastapi(
 
 
 @app.callback()
-def main():
-    """Entry point of the CLI.
-
-    This function is the entry point of the CLI. It is a simple wrapper around
-    the `typer.run` function that calls the `app` function with the arguments
-    passed to it.
-
-    Returns:
-        None
-    """
+def main() -> None:
     print("Welcome to the zen generator")
 
 
 if __name__ == "__main__":
-    """Entry point of the CLI.
-
-    This function is the entry point of the CLI. It is a simple wrapper around
-    the `typer.run` function that calls the `app` function with the arguments
-    passed to it.
-
-    Args:
-        None
-
-    Returns:
-        None
-
-    """
     app()

@@ -1,9 +1,5 @@
-"""This module contains utilities for formatting Python code.
+"""This module contains utilities for formatting Python code."""
 
-The functions in this module provide a higher-level interface than the `ast` module,
-and are used to generate Python code from AsyncAPI specifications.
-
-"""
 from __future__ import annotations
 
 import subprocess

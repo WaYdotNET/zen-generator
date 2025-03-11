@@ -1,9 +1,3 @@
-"""This module contains utilities for working with types.
-
-The functions in this module provide a higher-level interface than the `ast` module,
-and are used to generate Python code from AsyncAPI specifications.
-
-"""
 from __future__ import annotations
 
 ASYNCAPI_TO_PYTHON_TYPES: dict[str, str] = {

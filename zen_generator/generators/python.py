@@ -1,9 +1,5 @@
-"""This module contains utilities for generating Python code from AsyncAPI specifications.
+"""This module contains utilities for generating Python code from AsyncAPI specifications."""
 
-The functions in this module provide a higher-level interface than the `ast` module,
-and are used to generate Python code from AsyncAPI specifications.
-
-"""
 from __future__ import annotations
 
 from ast import Assign, Attribute, Call, Constant, ImportFrom, Load, Name, Store, alias
@@ -26,6 +22,7 @@ class Generator:
     Methods:
         generate_files_from_asyncapi: Generate Python files from an AsyncAPI specification.
     """
+
     @staticmethod
     def fastapi_generator() -> BasePythonGenerator:
         """Generate a FastAPI generator from an AsyncAPI specification.

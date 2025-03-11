@@ -4,13 +4,14 @@ The functions in this module provide a higher-level interface than the `ast` mod
 and are used to generate Python code from AsyncAPI specifications.
 
 """
+
 from __future__ import annotations
 
 import re
 from ast import AsyncFunctionDef, FunctionDef, Module, get_docstring, walk
 from typing import Any
 
-from zen_generator.core.ast_utils import convert_annotations_to_asyncapi_schemas, convert_ast_annotation_to_dict
+from zen_generator.core.ast_utils import convert_annotations_to_asyncapi_schemas, parse_type_annotation
 
 # Define regular expressions for Args and Returns sections
 ARGS_PATTERN = re.compile(r"Args:(.*?)(?:Returns|$)", re.DOTALL)
@@ -78,7 +79,7 @@ def _create_request_schema(
 
     for param in function_node.args.args:
         property_name = param.arg
-        items = convert_ast_annotation_to_dict(param.annotation)
+        items = parse_type_annotation(param.annotation)
         conv = convert_annotations_to_asyncapi_schemas(items)
         description = parameters_description.get(param.arg, "")
 
@@ -122,7 +123,7 @@ def _create_response_schema(
         "description": response_description,
     }
 
-    return_type = convert_ast_annotation_to_dict(function_node.returns)
+    return_type = parse_type_annotation(function_node.returns)
     properties = convert_annotations_to_asyncapi_schemas(return_type)
     response_payload = properties.get("properties", {})
     response_schema["payload"] = response_payload

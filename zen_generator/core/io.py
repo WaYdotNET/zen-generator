@@ -1,9 +1,5 @@
-"""This module contains utilities for working with files.
+"""This module contains utilities for working with files."""
 
-The functions in this module provide a higher-level interface than the `ast` module,
-and are used to generate Python code from AsyncAPI specifications.
-
-"""
 from __future__ import annotations
 
 import json
@@ -30,9 +26,9 @@ def parse_python_file_to_ast(source: Path) -> Module | None:
         source_text = source.read_text()
         return parse(source_text)
     elif source.is_dir():
-        raise InvalidFile("The source is a directory")
+        raise InvalidFile("The source is a directory", source)
     elif not source.exists():
-        raise InvalidFile("The source doesn't exist")
+        raise InvalidFile("The source doesn't exist", source)
     return None
 
 
@@ -50,9 +46,9 @@ def load_yaml(source: Path) -> dict[str, Any] | None:
         with open(source, "r") as file:
             return yaml.safe_load(file)
     elif source.is_dir():
-        raise InvalidFile("The source is a directory")
+        raise InvalidFile("The source is a directory", source)
     elif not source.exists():
-        raise InvalidFile("The source doesn't exist")
+        raise InvalidFile("The source doesn't exist", source)
     return None
 
 

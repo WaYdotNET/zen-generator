@@ -1,9 +1,5 @@
-"""This module contains utilities for generating Python code from AsyncAPI specifications.
+"""This module contains utilities for generating Python code from AsyncAPI specifications."""
 
-The functions in this module provide a higher-level interface than the `ast` module,
-and are used to generate Python code from AsyncAPI specifications.
-
-"""
 from __future__ import annotations
 
 from ast import (
@@ -33,7 +29,11 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Sequence, cast
 
-from zen_generator.core.ast_utils import convert_property, create_ast_function_definition, get_component_schemas
+from zen_generator.core.ast_utils import (
+    convert_asyncapi_property_to_ast_node,
+    create_ast_function_definition,
+    get_component_schemas,
+)
 from zen_generator.core.io import load_yaml, save_python_file
 
 
@@ -53,6 +53,7 @@ class BasePythonGenerator:
         additional_imports (Sequence[stmt | ImportFrom]): Additional imports to include in the generated code.
         additional_assingments (Sequence[stmt]): Additional assignments to include in the generated code.
     """
+
     models_ast: list[stmt] = field(init=False, repr=False, default_factory=list)
     fuctions_ast: list[stmt] = field(init=False, repr=False, default_factory=list)
     additional_imports: Sequence[stmt | ImportFrom] = field(default_factory=list)
@@ -205,7 +206,7 @@ class BasePythonGenerator:
             base_class_id = self.override_base_class or schema.get("base_class", "object")
             if schema.get("properties"):
                 for prop_name, prop_value in schema["properties"].items():
-                    annotation = convert_property(prop_value)
+                    annotation = convert_asyncapi_property_to_ast_node(prop_value)
                     if annotation is not None and prop_name not in schema.get("required", []):
                         annotation = BinOp(
                             left=cast(expr, annotation),
@@ -342,7 +343,7 @@ class BasePythonGenerator:
 
         if request_params.get("properties"):
             for param_name, param_value in request_params["properties"].items():
-                annotation_node = convert_property(param_value)
+                annotation_node = convert_asyncapi_property_to_ast_node(param_value)
                 if annotation_node and param_name not in request_params.get("required", []):
                     annotation_node = BinOp(
                         left=cast(expr, annotation_node),
@@ -370,7 +371,7 @@ class BasePythonGenerator:
         """
         response = components.get("messages", {}).get(f"{func_name}_response", {})
         response_param = response.get("payload", {})
-        returns_node = convert_property(response_param)
+        returns_node = convert_asyncapi_property_to_ast_node(response_param)
 
         if response_param and not response_param.get("format") == "required" and returns_node:
             returns_node = BinOp(

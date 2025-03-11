@@ -1,5 +1,4 @@
-![Zen Generator Logo](zen-generator-small.png)
-
+<img src="zen-generator-small.png" alt="Zen Generator Logo" width="200" height="200">
 # Zen Generator 🚀
 
 A bidirectional Python code generator that converts between AsyncAPI 3.0 specifications and Python code (pure Python or FastAPI implementations).

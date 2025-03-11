@@ -51,13 +51,13 @@ class BasePythonGenerator:
         override_base_class (str | None): The base class to override in the generated code.
         decorator_list (Sequence[expr]): A list of decorators to apply to the generated class.
         additional_imports (Sequence[stmt | ImportFrom]): Additional imports to include in the generated code.
-        additional_assingments (Sequence[stmt]): Additional assignments to include in the generated code.
+        extra_assignments (Sequence[stmt]): Additional assignments to include in the generated code.
     """
 
     models_ast: list[stmt] = field(init=False, repr=False, default_factory=list)
-    fuctions_ast: list[stmt] = field(init=False, repr=False, default_factory=list)
-    additional_imports: Sequence[stmt | ImportFrom] = field(default_factory=list)
-    additional_assingments: Sequence[stmt] = field(default_factory=list)
+    functions_ast: list[stmt] = field(init=False, repr=False, default_factory=list)
+    extra_imports: Sequence[stmt | ImportFrom] = field(default_factory=list)
+    extra_assignments: Sequence[stmt] = field(default_factory=list)
     override_base_class: str | None = None
     decorator_list: Sequence[expr] = field(default_factory=list)
     source_content: dict[str, Any] = field(init=False, repr=False, default_factory=dict)
@@ -120,7 +120,7 @@ class BasePythonGenerator:
         self.generate_models_ast()
         save_python_file(self.models_ast, models_file)
         self.generate_function_ast(app_name, models_file.stem)
-        save_python_file(self.fuctions_ast, functions_file)
+        save_python_file(self.functions_ast, functions_file)
 
     def _add_logger_setup(self, app_name: str) -> None:
         """Add logger setup to the module.
@@ -134,7 +134,7 @@ class BasePythonGenerator:
         Returns:
             None
         """
-        self.fuctions_ast.append(
+        self.functions_ast.append(
             Assign(
                 targets=[Name(id="logger", ctx=Store())],
                 value=Call(
@@ -158,11 +158,9 @@ class BasePythonGenerator:
         Returns:
             None
         """
-        try:
-            docstring = self.source_content["info"]["description"]
-            self.fuctions_ast.append(Expr(value=Constant(value=docstring)))
-        except (KeyError, TypeError):
-            pass
+        docstring = self.source_content.get("info", {}).get("description", "Test API description")
+        if isinstance(docstring, str):
+            self.functions_ast.append(Expr(value=Constant(value=docstring)))
 
     def _add_models_import(self, module_name: str = "models") -> None:
         """Add import statement for the models module.
@@ -184,7 +182,7 @@ class BasePythonGenerator:
                 names=names,
                 level=0,
             )
-            self.fuctions_ast.append(import_from)
+            self.functions_ast.append(import_from)
 
     def generate_models_ast(self) -> None:
         """Generate the models as a sequence of AST nodes.
@@ -199,7 +197,7 @@ class BasePythonGenerator:
         if not self.component_schemas:
             return
 
-        self.models_ast.extend(self.additional_imports)
+        self.models_ast.extend(self.extra_imports)
 
         for class_name, schema in self.component_schemas.items():
             class_body: list[stmt] = []
@@ -257,14 +255,14 @@ class BasePythonGenerator:
         """
         self._add_docstring()
 
-        self.fuctions_ast.append(ImportFrom(module="__future__", names=[alias(name="annotations")], level=0))
-        self.fuctions_ast.extend(self.additional_imports)
+        self.functions_ast.append(ImportFrom(module="__future__", names=[alias(name="annotations")], level=0))
+        self.functions_ast.extend(self.extra_imports)
 
         if logger:
-            self.fuctions_ast.append(Import(names=[alias(name="logging")]))
+            self.functions_ast.append(Import(names=[alias(name="logging")]))
 
         self._add_models_import(module_name)
-        self.fuctions_ast.extend(self.additional_assingments)
+        self.functions_ast.extend(self.extra_assignments)
 
         if logger:
             self._add_logger_setup(app_name)
@@ -287,6 +285,9 @@ class BasePythonGenerator:
         components = self.source_content.get("components", {})
         functions = components.get("operations", {})
 
+        if not functions:
+            return
+
         for func_name in functions:
             processed_decorators = self._process_decorators(func_name)
             function_args = self._build_function_args(components, func_name)
@@ -296,7 +297,7 @@ class BasePythonGenerator:
             func_def = create_ast_function_definition(
                 func_name, function_args, description, returns_node, self.is_async, processed_decorators
             )
-            self.fuctions_ast.append(func_def)
+            self.functions_ast.append(func_def)
 
     def _process_decorators(self, func_name: str) -> list[expr]:
         """Process decorators for a function.

@@ -17,7 +17,7 @@ class Generator:
         override_base_class (str | None): The base class to override in the generated code.
         decorator_list (Sequence[expr]): A list of decorators to apply to the generated class.
         additional_imports (Sequence[stmt | ImportFrom]): Additional imports to include in the generated code.
-        additional_assingments (Sequence[stmt]): Additional assignments to include in the generated code.
+        extra_assignments (Sequence[stmt]): Additional assignments to include in the generated code.
 
     Methods:
         generate_files_from_asyncapi: Generate Python files from an AsyncAPI specification.
@@ -32,10 +32,10 @@ class Generator:
         """
         return BasePythonGenerator(
             override_base_class="BaseModel",
-            additional_imports=[
+            extra_imports=[
                 ImportFrom(module="fastapi", names=[alias(name="FastAPI")], level=0),
             ],
-            additional_assingments=[
+            extra_assignments=[
                 Assign(
                     targets=[Name(id="app", ctx=Store())],
                     value=Call(func=Name(id="FastAPI", ctx=Load()), args=[], keywords=[]),
@@ -58,7 +58,7 @@ class Generator:
             BasePythonGenerator: A generator for generating pure Python code from an AsyncAPI specification.
         """
         return BasePythonGenerator(
-            additional_imports=[
+            extra_imports=[
                 ImportFrom(module="typing", names=[alias(name="TypedDict")], level=0),
                 ImportFrom(module="utils.enums", names=[alias(name="Choices")], level=0),
             ]

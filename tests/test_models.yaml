@@ -1,0 +1,47 @@
+---
+components:
+  schemas:
+    TaskAttachment:
+      type: object
+      base_class: TypedDict
+      required:
+        - name
+        - kind
+      properties:
+        name:
+          type: string
+        kind:
+          type: string
+    UserTaxDeclarationInfo:
+      type: object
+      base_class: TypedDict
+      required:
+        - full_environment
+      properties:
+        utd_id:
+          type: integer
+        full_environment:
+          type: boolean
+    Mida4TaskEnvironmentChoices:
+      type: object
+      base_class: Choices
+    FooBar:
+      type: object
+      base_class: TypedDict
+      required:
+      - baz
+      - foo
+      properties:
+        env:
+          type: str
+        baz:
+          oneOf:
+          - $ref: '#/components/schemas/UserTaxDeclarationInfo'
+          - type: array
+            items:
+              type: boolean
+          - type: integer
+        foo:
+          oneOf:
+          - type: string
+          - type: object

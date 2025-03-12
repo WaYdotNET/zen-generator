@@ -1,0 +1,299 @@
+---
+asyncapi: 3.0.0
+info:
+  title: claudio
+  version: 0.0.1
+  description: 'some docstring '
+channels:
+  get_attachments_from_utd:
+    $ref: '#/components/channels/get_attachments_from_utd'
+  empty:
+    $ref: '#/components/channels/empty'
+  generate_sync_task:
+    $ref: '#/components/channels/generate_sync_task'
+  generate_iiacc_task:
+    $ref: '#/components/channels/generate_iiacc_task'
+  generate_iva_sync_task:
+    $ref: '#/components/channels/generate_iva_sync_task'
+operations:
+  get_attachments_from_utd:
+    $ref: '#/components/operations/get_attachments_from_utd'
+  empty:
+    $ref: '#/components/operations/empty'
+  generate_sync_task:
+    $ref: '#/components/operations/generate_sync_task'
+  generate_iiacc_task:
+    $ref: '#/components/operations/generate_iiacc_task'
+  generate_iva_sync_task:
+    $ref: '#/components/operations/generate_iva_sync_task'
+components:
+  channels:
+    get_attachments_from_utd:
+      messages:
+        request:
+          $ref: '#/components/messages/get_attachments_from_utd_request'
+        response:
+          $ref: '#/components/messages/get_attachments_from_utd_response'
+    empty:
+      messages:
+        request:
+          $ref: '#/components/messages/empty_request'
+        response:
+          $ref: '#/components/messages/empty_response'
+    generate_sync_task:
+      messages:
+        request:
+          $ref: '#/components/messages/generate_sync_task_request'
+        response:
+          $ref: '#/components/messages/generate_sync_task_response'
+    generate_iiacc_task:
+      messages:
+        request:
+          $ref: '#/components/messages/generate_iiacc_task_request'
+        response:
+          $ref: '#/components/messages/generate_iiacc_task_response'
+    generate_iva_sync_task:
+      messages:
+        request:
+          $ref: '#/components/messages/generate_iva_sync_task_request'
+        response:
+          $ref: '#/components/messages/generate_iva_sync_task_response'
+  operations:
+    get_attachments_from_utd:
+      action: receive
+      description: "\n    Descrizione metodo get_attachments_from_utd\n    Args:\n\
+             \        utd_id (): id dichiarazione\n        kinds (): elenco tipologie\n\
+             \        other (): altro task attachment\n\n    Returns:\n        Torno cose\n\
+             \    "
+      channel:
+        $ref: '#/channels/get_attachments_from_utd'
+      messages:
+      - $ref: '#/channels/get_attachments_from_utd/messages/request'
+      reply:
+        channel:
+          $ref: '#/channels/get_attachments_from_utd'
+        messages:
+        - $ref: '#/channels/get_attachments_from_utd/messages/response'
+    empty:
+      action: receive
+      description: ''
+      channel:
+        $ref: '#/channels/empty'
+      messages:
+      - $ref: '#/channels/empty/messages/request'
+      reply:
+        channel:
+          $ref: '#/channels/empty'
+        messages:
+        - $ref: '#/channels/empty/messages/response'
+    generate_sync_task:
+      action: receive
+      description: ''
+      channel:
+        $ref: '#/channels/generate_sync_task'
+      messages:
+      - $ref: '#/channels/generate_sync_task/messages/request'
+      reply:
+        channel:
+          $ref: '#/channels/generate_sync_task'
+        messages:
+        - $ref: '#/channels/generate_sync_task/messages/response'
+    generate_iiacc_task:
+      action: receive
+      description: ''
+      channel:
+        $ref: '#/channels/generate_iiacc_task'
+      messages:
+      - $ref: '#/channels/generate_iiacc_task/messages/request'
+      reply:
+        channel:
+          $ref: '#/channels/generate_iiacc_task'
+        messages:
+        - $ref: '#/channels/generate_iiacc_task/messages/response'
+    generate_iva_sync_task:
+      action: receive
+      description: ''
+      channel:
+        $ref: '#/channels/generate_iva_sync_task'
+      messages:
+      - $ref: '#/channels/generate_iva_sync_task/messages/request'
+      reply:
+        channel:
+          $ref: '#/channels/generate_iva_sync_task'
+        messages:
+        - $ref: '#/channels/generate_iva_sync_task/messages/response'
+  messages:
+    get_attachments_from_utd_request:
+      title: Request params for get_attachments_from_utd
+      summary: ''
+      description: ''
+      payload:
+        type: object
+        required:
+        - utd_id
+        - kinds
+        properties:
+          utd_id:
+            oneOf:
+            - type: integer
+            - type: string
+            - $ref: '#/components/schemas/TaskAttachment'
+            description: id dichiarazione
+          kinds:
+            type: array
+            items:
+              type: string
+            description: elenco tipologie
+          other:
+            oneOf:
+            - type: integer
+            - $ref: '#/components/schemas/FooBar'
+            description: altro task attachment
+    get_attachments_from_utd_response:
+      title: Request params for get_attachments_from_utd
+      summary: ''
+      description: Torno cose
+      payload:
+        type: array
+        items:
+          $ref: '#/components/schemas/TaskAttachment'
+        format: required
+    empty_request:
+      title: Request params for empty
+      summary: ''
+      description: ''
+      payload:
+        type: object
+        required: []
+        properties: {}
+    empty_response:
+      title: Request params for empty
+      summary: ''
+      description: ''
+      payload: {}
+    generate_sync_task_request:
+      title: Request params for generate_sync_task
+      summary: ''
+      description: ''
+      payload:
+        type: object
+        required:
+        - utd_info
+        - skip_create_f24s
+        properties:
+          utd_info:
+            $ref: '#/components/schemas/UserTaxDeclarationInfo'
+            description: ''
+          sequence:
+            type: integer
+            description: ''
+          skip_create_f24s:
+            type: boolean
+            description: ''
+    generate_sync_task_response:
+      title: Request params for generate_sync_task
+      summary: ''
+      description: ''
+      payload:
+        type: integer
+    generate_iiacc_task_request:
+      title: Request params for generate_iiacc_task
+      summary: ''
+      description: ''
+      payload:
+        type: object
+        required:
+        - utd_info
+        properties:
+          utd_info:
+            $ref: '#/components/schemas/UserTaxDeclarationInfo'
+            description: ''
+          fiscal_elements:
+            type: array
+            items:
+              type: object
+            description: ''
+    generate_iiacc_task_response:
+      title: Request params for generate_iiacc_task
+      summary: ''
+      description: ''
+      payload:
+        oneOf:
+        - type: integer
+        - type: string
+        - $ref: '#/components/schemas/TaskAttachment'
+    generate_iva_sync_task_request:
+      title: Request params for generate_iva_sync_task
+      summary: ''
+      description: ''
+      payload:
+        type: object
+        required:
+        - user_id
+        - ref_year
+        - environment
+        properties:
+          user_id:
+            type: integer
+            description: ''
+          ref_year:
+            type: integer
+            description: ''
+          environment:
+            $ref: '#/components/schemas/Mida4TaskEnvironmentChoices'
+            description: ''
+          custom_actions:
+            type: object
+            description: ''
+    generate_iva_sync_task_response:
+      title: Request params for generate_iva_sync_task
+      summary: ''
+      description: ''
+      payload: {}
+  schemas:
+    TaskAttachment:
+      type: object
+      base_class: TypedDict
+      required:
+      - name
+      - kind
+      properties:
+        name:
+          type: string
+        kind:
+          type: string
+    UserTaxDeclarationInfo:
+      type: object
+      base_class: TypedDict
+      required:
+      - full_environment
+      properties:
+        utd_id:
+          type: integer
+        full_environment:
+          type: boolean
+    Mida4TaskEnvironmentChoices:
+      type: object
+      base_class: Choices
+      required: []
+      properties: {}
+    FooBar:
+      type: object
+      base_class: TypedDict
+      required:
+      - baz
+      - foo
+      properties:
+        env:
+          type: string
+        baz:
+          oneOf:
+          - $ref: '#/components/schemas/UserTaxDeclarationInfo'
+          - type: array
+            items:
+              type: boolean
+          - type: integer
+        foo:
+          oneOf:
+          - type: string
+          - type: object

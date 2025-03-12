@@ -1,0 +1,277 @@
+---
+asyncapi: "3.0.0"
+info:
+  title: Mida4Api
+  version: 1.0.1
+  description: >
+    Record of phased-in incompatible language changes.
+
+    Each line is of the form:
+
+        FeatureName = "_Feature(" OptionalRelease "," MandatoryRelease ","
+                                  CompilerFlag ")"
+
+    where, normally, OptionalRelease < MandatoryRelease, and both are 5-tuples
+    of the same form as sys.version_info:
+
+        (PY_MAJOR_VERSION, # the 2 in 2.1.0a3; an int
+         PY_MINOR_VERSION, # the 1; an int
+         PY_MICRO_VERSION, # the 0; an int
+         PY_RELEASE_LEVEL, # "alpha", "beta", "candidate" or "final"; string
+         PY_RELEASE_SERIAL # the 3; an int
+        )
+
+    OptionalRelease records the first release in which
+
+        from __future__ import FeatureName
+
+    was accepted.
+
+    In the case of MandatoryReleases that have not yet occurred,
+    MandatoryRelease predicts the release in which the feature will become part
+    of the language.
+
+    Else MandatoryRelease records when the feature became part of the language;
+    in releases at or after that, modules no longer need
+
+        from __future__ import FeatureName
+
+    to use the feature in question, but may continue to use such imports.
+
+    MandatoryRelease may also be None, meaning that a planned feature got
+    dropped.
+
+    Instances of class _Feature have two corresponding methods,
+    .getOptionalRelease() and .getMandatoryRelease().
+
+    CompilerFlag is the (bitfield) flag that should be passed in the fourth
+    argument to the builtin function compile() to enable the feature in
+    dynamically compiled code.  This flag is stored in the .compiler_flag
+    attribute on _Future instances.  These values must match the appropriate
+    #defines of CO_xxx flags in Include/cpython/compile.h.
+
+    No feature line is ever to be deleted from this file.
+channels:
+    cose_a_caso:
+      $ref: '#/components/channels/cose_a_caso'
+    generate_sync_task:
+      $ref: '#/components/channels/generate_sync_task'
+    carlo:
+      $ref: '#/components/channels/carlo'
+    generate_iiac_task:
+      $ref: '#/components/channels/generate_iiac_task'
+operations:
+    cose_a_caso:
+      $ref: '#/components/operations/cose_a_caso'
+    generate_sync_task:
+      $ref: '#/components/operations/generate_sync_task'
+    carlo:
+      $ref: '#/components/operations/carlo'
+    generate_iiac_task:
+      $ref: '#/components/operations/generate_iiac_task'
+components:
+  channels:
+      cose_a_caso:
+        messages:
+          request:
+            $ref: '#/components/messages/cose_a_caso_request'
+          response:
+            $ref: '#/components/messages/cose_a_caso_response'
+      generate_sync_task:
+        messages:
+          request:
+            $ref: '#/components/messages/generate_sync_task_request'
+          response:
+            $ref: '#/components/messages/generate_sync_task_response'
+      carlo:
+        messages:
+          request:
+            $ref: '#/components/messages/carlo_request'
+          response:
+            $ref: '#/components/messages/carlo_response'
+      generate_iiac_task:
+        messages:
+          request:
+            $ref: '#/components/messages/generate_iiac_task_request'
+          response:
+            $ref: '#/components/messages/generate_iiac_task_response'
+  operations:
+    cose_a_caso:
+      action: receive
+      description: >
+
+        Descrizione metodo get_attachments_from_utd
+        Args:
+            utd_id (): id dichiarazione
+            kinds (): elenco tipologie
+            other (): altro task attachment
+
+        Returns:
+            torno caso
+
+
+      channel:
+        $ref: '#/channels/cose_a_caso'
+      messages:
+        - $ref: '#/channels/cose_a_caso/messages/request'
+      reply:
+        channel:
+          $ref: '#/channels/cose_a_caso'
+        messages:
+          - $ref: '#/channels/cose_a_caso/messages/response'
+    generate_sync_task:
+      action: receive
+      channel:
+        $ref: '#/channels/generate_sync_task'
+      messages:
+        - $ref: '#/channels/generate_sync_task/messages/request'
+      reply:
+        channel:
+          $ref: '#/channels/generate_sync_task'
+        messages:
+          - $ref: '#/channels/generate_sync_task/messages/response'
+    carlo:
+      action: receive
+      channel:
+        $ref: '#/channels/carlo'
+      messages:
+        - $ref: '#/channels/carlo/messages/request'
+      reply:
+        channel:
+          $ref: '#/channels/carlo'
+        messages:
+          - $ref: '#/channels/carlo/messages/response'
+    generate_iiac_task:
+      action: receive
+      channel:
+        $ref: '#/channels/generate_iiac_task'
+      messages:
+        - $ref: '#/channels/generate_iiac_task/messages/request'
+      reply:
+        channel:
+          $ref: '#/channels/generate_iiac_task'
+        messages:
+          - $ref: '#/channels/generate_iiac_task/messages/response'
+
+  messages:
+    # request
+      cose_a_caso_request:
+        title: Request params for cose_a_caso
+        summary: ''
+        payload:
+          type: object
+          required:
+            - utd_id
+            - kinds
+          properties:
+              utd_id:
+                description: >
+                  id dichiarazione
+                type: integer
+              kinds:
+                description: >
+                  elenco tipologie
+                type: array
+                items:
+                      type: string
+              other:
+                description: >
+                  altro task attachment
+                oneOf:
+                  - type: integer
+                  - $ref: '#/components/schemas/TaskAttachment'
+      generate_sync_task_request:
+        title: Request params for generate_sync_task
+        summary: ''
+        payload:
+          type: object
+          required:
+            - utd_info
+            - skip_create_f24s
+          properties:
+              utd_info:
+                $ref: '#/components/schemas/UserTaxDeclarationInfo'
+              sequence:
+                type: integer
+              skip_create_f24s:
+                type: boolean
+      carlo_request:
+        title: Request params for carlo
+        summary: ''
+        payload:
+          type: object
+      generate_iiac_task_request:
+        title: Request params for generate_iiac_task
+        summary: ''
+        payload:
+          type: object
+          required:
+            - utd_info
+          properties:
+              utd_info:
+                $ref: '#/components/schemas/UserTaxDeclarationInfo'
+              fiscal_elements:
+                type: array
+                items:
+                      type: object
+    # response
+      cose_a_caso_response:
+        title: Response params for cose_a_caso
+        summary: ''
+        description: >
+          torno caso
+        payload:
+          type: boolean
+      generate_sync_task_response:
+        title: Response params for generate_sync_task
+        summary: ''
+        payload:
+          type: integer
+      carlo_response:
+        title: Response params for carlo
+        summary: ''
+      generate_iiac_task_response:
+        title: Response params for generate_iiac_task
+        summary: ''
+        payload:
+          type: integer
+
+  schemas:
+
+      TaskAttachment:
+        type: object
+        base_class: object
+        required:
+          - name
+          - kind
+        properties:
+            name:
+              type: string
+            kind:
+              type: string
+
+      UserTaxDeclarationInfo:
+        type: object
+        base_class: Choices
+        required:
+          - full_environment
+        properties:
+            utd_id:
+              type: integer
+            full_environment:
+              type: boolean
+
+      FooBar:
+        type: object
+        base_class: TypedDict
+        required:
+          - foo
+        properties:
+            baz:
+              oneOf:
+                - $ref: '#/components/schemas/UserTaxDeclarationInfo'
+                - type: boolean
+                - type: integer
+            foo:
+              type: string
+

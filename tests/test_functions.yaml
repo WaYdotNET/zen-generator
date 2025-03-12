@@ -1,0 +1,149 @@
+---
+operations:
+  get_attachments_from_utd:
+    $ref: '#/components/operations/get_attachments_from_utd'
+  generate_sync_task:
+    $ref: '#/components/operations/generate_sync_task'
+  generate_iiacc_task:
+    $ref: '#/components/operations/generate_iiacc_task'
+  generate_iva_sync_task:
+    $ref: '#/components/operations/generate_iva_sync_task'
+components:
+  operations:
+    get_attachments_from_utd:
+      action: receive
+      channel:
+        $ref: '#/channels/get_attachments_from_utd'
+      messages:
+        - $ref: '#/channels/get_attachments_from_utd/messages/request'
+      reply:
+        channel:
+          $ref: '#/channels/get_attachments_from_utd'
+        messages:
+          - $ref: '#/channels/get_attachments_from_utd/messages/response'
+    generate_sync_task:
+      action: receive
+      channel:
+        $ref: '#/channels/generate_sync_task'
+      messages:
+        - $ref: '#/channels/generate_sync_task/messages/request'
+      reply:
+        channel:
+          $ref: '#/channels/generate_sync_task'
+        messages:
+          - $ref: '#/channels/generate_sync_task/messages/response'
+    generate_iiacc_task:
+      action: receive
+      channel:
+        $ref: '#/channels/generate_iiacc_task'
+      messages:
+        - $ref: '#/channels/generate_iiacc_task/messages/request'
+      reply:
+        channel:
+          $ref: '#/channels/generate_iiacc_task'
+        messages:
+          - $ref: '#/channels/generate_iiacc_task/messages/response'
+    generate_iva_sync_task:
+      action: receive
+      channel:
+        $ref: '#/channels/generate_iva_sync_task'
+      messages:
+        - $ref: '#/channels/generate_iva_sync_task/messages/request'
+      reply:
+        channel:
+          $ref: '#/channels/generate_iva_sync_task'
+        messages:
+          - $ref: '#/channels/generate_iva_sync_task/messages/response'
+
+  messages:
+    # request
+      get_attachments_from_utd_request:
+        title: Request params for get_attachments_from_utd
+        summary: ''
+        payload:
+          type: object
+          required:
+            - utd_id
+            - kinds
+          properties:
+              utd_id:
+                oneOf:
+                  - type: integer
+                  - type: string
+                  - $ref: '#/components/schemas/TaskAttachment'
+              kinds:
+                type: array
+                items:
+                      type: string
+      generate_sync_task_request:
+        title: Request params for generate_sync_task
+        summary: ''
+        payload:
+          type: object
+          required:
+            - utd_info
+            - skip_create_f24s
+          properties:
+              utd_info:
+                $ref: '#/components/schemas/UserTaxDeclarationInfo'
+              sequence:
+                type: integer
+              skip_create_f24s:
+                type: boolean
+      generate_iiacc_task_request:
+        title: Request params for generate_iiacc_task
+        summary: ''
+        payload:
+          type: object
+          required:
+            - utd_info
+          properties:
+              utd_info:
+                $ref: '#/components/schemas/UserTaxDeclarationInfo'
+              fiscal_elements:
+                type: array
+                items:
+                  type: object
+      generate_iva_sync_task_request:
+        title: Request params for generate_iva_sync_task
+        summary: ''
+        payload:
+          type: object
+          required:
+            - user_id
+            - ref_year
+            - environment
+          properties:
+              user_id:
+                type: integer
+              ref_year:
+                type: integer
+              environment:
+                $ref: '#/components/schemas/Mida4TaskEnvironmentChoices'
+              custom_actions:
+                type: object
+    # response
+      get_attachments_from_utd_response:
+        title: Response params for get_attachments_from_utd
+        summary: ''
+        payload:
+          format: required
+          type: array
+          items:
+            $ref: '#/components/schemas/TaskAttachment'
+      generate_sync_task_response:
+        title: Response params for generate_sync_task
+        summary: ''
+        payload:
+          type: integer
+      generate_iiacc_task_response:
+        title: Response params for generate_iiacc_task
+        summary: ''
+        payload:
+          oneOf:
+            - type: integer
+            - type: string
+            - $ref: '#/components/schemas/TaskAttachment'
+      generate_iva_sync_task_response:
+        title: Response params for generate_iva_sync_task
+        summary: ''

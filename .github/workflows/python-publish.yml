@@ -37,11 +37,8 @@ jobs:
       - name: Publish package
         id: publish
         uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          password: ${{ secrets.PYPI_TOKEN }}
-
+        
       - name: Create GitHub release
-        if: steps.publish.outputs.published == 'true'
         uses: actions/create-release@v1
         with:
           tag_name: ${{ github.ref }}

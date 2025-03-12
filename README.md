@@ -2,11 +2,11 @@
 
 # Zen Generator 🚀
 
-![PyPI version](https://badge.fury.io/py/zen-generator.svg)](https://badge.fury.io/py/zen-generator)
+[![PyPI version](https://badge.fury.io/py/zen-generator.svg)](https://badge.fury.io/py/zen-generator)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python Version](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/release/python-3100/)
-[![Downloads](https://pepy.tech/badge/zen-generator)](https://pepy.tech/project/zen-generator)
-[![Code Style: Ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/charliermarsh/ruff)
+[![Code Style: Ruff](https://img.shields.io/badge/code%20style-ruff-orange.svg)](https://github.com/charliermarsh/ruff)
+
 
 
 A bidirectional Python code generator that converts between AsyncAPI 3.0 specifications and Python code (pure Python or FastAPI implementations).

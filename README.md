@@ -19,6 +19,23 @@ A bidirectional Python code generator that converts between AsyncAPI 3.0 specifi
 ```bash
 pip install zen-generator
 ```
+> [!IMPORTANT]
+>
+> Currently, only model and function definitions in the `components` block of the AsyncAPI file are supported.
+> Inline definitions are not supported.
+
+> [!NOTE]
+> 
+This code snippet includes a custom definition for > declaring required parameters in model/function > definitions.
+Specifically, the `required` keyword is used to specify mandatory fields, as shown below:
+
+```yaml
+required:
+  - user_id
+```
+> This ensures that the `user_id` parameter is always provided when the model or function is utilized.
+
+
 
 ## Quick Start 🏃
 

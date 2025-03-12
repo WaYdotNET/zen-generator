@@ -1,7 +1,7 @@
 [project]
 name = "zen-generator"
-version = "0.1.0"
-description = "async api doc generator"
+version = "0.1.1"
+description = "A bidirectional Python code generator that converts between AsyncAPI 3.0 specifications and Python code (pure Python or FastAPI implementations)."
 authors = [{ name = "Carlo Bertini [WaYdotNET]", email = "waydotnet@gmail.com" }]
 readme = "README.md"
 requires-python = ">=3.10"

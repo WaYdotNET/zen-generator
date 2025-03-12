@@ -1,4 +1,4 @@
-<img src="zen-generator-small.png" alt="Zen Generator Logo" width="200" height="200">
+<img src="https://github.com/WaYdotNET/zen-generator/raw/main/zen-generator-small.png" alt="Zen Generator Logo" width="200" height="200">
 
 # Zen Generator 🚀
 

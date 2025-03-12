@@ -45,7 +45,6 @@ class BasePythonGenerator:
     AsyncAPI specifications.
 
     Attributes:
-        asyncapi_file (Path): The path to the AsyncAPI file.
         output_file (Path): The path to the generated Python file.
         models_file (Path): The path to the generated models file.
         override_base_class (str | None): The base class to override in the generated code.
@@ -67,17 +66,7 @@ class BasePythonGenerator:
     def __post__init__(self) -> None:
         """Generate Python files from an AsyncAPI specification.
 
-        This method takes in the path to the AsyncAPI file, the path to the generated
-        models file, the path to the generated functions file and the name of the
-        application. Optionally, it takes in a boolean indicating whether the generated
-        code should be asynchronous.
 
-        Args:
-            source_file (Path): The path to the AsyncAPI file.
-            models_file (Path): The path to the generated models file.
-            functions_file (Path): The path to the generated functions file.
-            app_name (str): The name of the application.
-            is_async (bool): Whether the generated code should be asynchronous.
 
         Returns:
             None
@@ -114,13 +103,19 @@ class BasePythonGenerator:
             None
         """
         self.is_async = is_async
-        self.source_content = load_yaml(source_file) or {}
-        self.component_schemas = get_component_schemas(self.source_content) or {}
+        self.load_asyncapi_content(source_file)
+        self.load_component_schemas()
 
         self.generate_models_ast()
         save_python_file(self.models_ast, models_file)
         self.generate_function_ast(app_name, models_file.stem)
         save_python_file(self.functions_ast, functions_file)
+
+    def load_component_schemas(self) -> None:
+        self.component_schemas = get_component_schemas(self.source_content) or {}
+
+    def load_asyncapi_content(self, source_file) -> None:
+        self.source_content = load_yaml(source_file) or {}
 
     def _add_logger_setup(self, app_name: str) -> None:
         """Add logger setup to the module.

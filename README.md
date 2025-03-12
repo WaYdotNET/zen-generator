@@ -24,6 +24,7 @@ pip install zen-generator
 > Currently, only model and function definitions in the `components` block of the AsyncAPI file are supported.
 > Inline definitions are not supported.
 
+
 > [!NOTE]
 > 
 This code snippet includes a custom definition for > declaring required parameters in model/function > definitions.

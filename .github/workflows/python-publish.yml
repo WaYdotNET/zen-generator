@@ -36,11 +36,9 @@ jobs:
 
       - name: Publish package
         id: publish
-        uses: actions/publish@v2
+        uses: pypa/gh-action-pypi-publish@release/v1
         with:
-          registry: pypi
-        env:
-          PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
+          password: ${{ secrets.PYPI_TOKEN }}
 
       - name: Create GitHub release
         if: steps.publish.outputs.published == 'true'

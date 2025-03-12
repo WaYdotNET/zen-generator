@@ -109,10 +109,37 @@ $ fastapi [OPTIONS]
 
 ## Generated Code Examples 📝
 
-### Models (models.py)
+
+### Pure Python Implementation (models.py)
 
 ```python
 from __future__ import annotations
+
+from typing import TypedDict
+
+
+class UserModel(TypedDict):
+    id: int
+    name: str
+    email: str | None = None
+```
+
+### Pure Python Implementation (functions.py)
+
+```python
+from __future__ import annotations
+
+from .models import UserModel
+
+def get_user(user_id: int) -> UserModel:
+    ...
+```
+
+### FastAPI Implementation (models.py)
+
+```python
+from __future__ import annotations
+
 from pydantic import BaseModel
 
 class UserModel(BaseModel):
@@ -125,7 +152,9 @@ class UserModel(BaseModel):
 
 ```python
 from __future__ import annotations
+
 from fastapi import FastAPI
+
 from .models import UserModel
 
 app = FastAPI()
@@ -135,15 +164,76 @@ async def get_user(user_id: int) -> UserModel:
     ...
 ```
 
-### Pure Python Implementation (functions.py)
 
-```python
-from __future__ import annotations
-from typing import Optional
-from .models import UserModel
+### Asyncapi documentation (asyncapi.yaml)
 
-def get_user(user_id: int) -> UserModel:
-    ...
+```yaml
+asyncapi: 3.0.0
+info:
+  title: Zen
+  version: 0.0.1
+  description: ''
+channels:
+  get_user:
+    $ref: '#/components/channels/get_user'
+operations:
+  get_user:
+    $ref: '#/components/operations/get_user'
+components:
+  channels:
+    get_user:
+      messages:
+        request:
+          $ref: '#/components/messages/get_user_request'
+        response:
+          $ref: '#/components/messages/get_user_response'
+  operations:
+    get_user:
+      action: receive
+      description: ''
+      channel:
+        $ref: '#/channels/get_user'
+      messages:
+      - $ref: '#/channels/get_user/messages/request'
+      reply:
+        channel:
+          $ref: '#/channels/get_user'
+        messages:
+        - $ref: '#/channels/get_user/messages/response'
+  messages:
+    get_user_request:
+      title: Request params for get_user
+      summary: ''
+      description: ''
+      payload:
+        type: object
+        required:
+        - user_id
+        properties:
+          user_id:
+            type: integer
+            description: ''
+    get_user_response:
+      title: Response params for get_user
+      summary: ''
+      description: ''
+      payload:
+        $ref: '#/components/schemas/UserModel'
+        format: required
+  schemas:
+    UserModel:
+      type: object
+      base_class: BaseModel
+      required:
+      - id
+      - name
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        email:
+          type: string
 ```
 
 ## Development Setup 🛠️

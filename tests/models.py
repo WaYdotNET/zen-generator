@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TypedDict
 
-from utils.enums import Choices
+from utils.enums import Choices  # type: ignore
 
 
 class TaskAttachment(TypedDict):

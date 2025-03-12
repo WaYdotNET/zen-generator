@@ -13,7 +13,7 @@ from zen_generator.core.parsing import function_content_reader
 def create_async_api_content(
     app_name: str,
     models_schema: dict[str, Any],
-    functions_docstring: str | None,
+    api_description: str | None,
     functions_parsed: dict[str, Any],
 ):
     """Generate the AsyncAPI document from the provided models and functions content.
@@ -23,7 +23,7 @@ def create_async_api_content(
 
     :param app_name: The name of the application
     :param models_schema: The models schema
-    :param functions_docstring: The functions docstring
+    :param api_description: The api docstring
     :param functions_parsed: The functions parsed content
     :return: The generated AsyncAPI document
     """
@@ -71,7 +71,7 @@ def create_async_api_content(
         "info": {
             "title": app_name,
             "version": "0.0.1",
-            "description": functions_docstring,
+            "description": api_description or "",
         },
         "channels": channels,
         "operations": operations,
@@ -96,8 +96,8 @@ def generate_asyncapi_from_files(models_file: Path, functions_file: Path, output
     models_schema = generate_component_schemas(models_ast)
 
     functions_ast = parse_python_file_to_ast(functions_file)
-    functions_docstring, functions_parsed = function_content_reader(functions_ast)
+    api_description, functions_parsed = function_content_reader(functions_ast)
 
-    async_api_content = create_async_api_content(app_name, models_schema, functions_docstring, functions_parsed)
+    async_api_content = create_async_api_content(app_name, models_schema, api_description, functions_parsed)
 
     save_yaml_file(async_api_content, output_path, app_name)

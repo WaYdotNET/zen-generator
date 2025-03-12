@@ -23,8 +23,19 @@ A bidirectional Python code generator that converts between AsyncAPI 3.0 specifi
 
 ## Installation 📦
 
+**with [uv](https://docs.astral.sh/uv/)**:
 ```bash
-pip install zen-generator
+uv tool install zen-generator
+```
+
+**with [pipx](https://pipx.pypa.io/stable/)**:
+```bash
+pipx install zen-generator
+```
+
+**with [uvx](https://docs.astral.sh/uv/guides/tools/)**:
+```bash
+uvx zen-generator
 ```
 
 > [!IMPORTANT]
@@ -47,13 +58,13 @@ Convert between AsyncAPI 3.0 specifications and Python code:
 
 ```bash
 # Generate FastAPI implementation from AsyncAPI spec
-zen-generator fastapi
+uvx zen-generator fastapi
 
-# Generate pure Python implementation from AsyncAPI spec  
-zen-generator pure-python 
+# Generate pure Python implementation from AsyncAPI spec
+uvx zen-generator pure-python
 
 # Generate AsyncAPI spec from Python code
-zen-generator asyncapi-documentation
+uvx zen-generator asyncapi-documentation
 ```
 
 ### Command Line Interface

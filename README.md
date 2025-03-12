@@ -2,29 +2,37 @@
 
 # Zen Generator 🚀
 
+![PyPI version](https://badge.fury.io/py/zen-generator.svg)](https://badge.fury.io/py/zen-generator)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python Version](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/release/python-3100/)
+[![Downloads](https://pepy.tech/badge/zen-generator)](https://pepy.tech/project/zen-generator)
+[![Code Style: Ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/charliermarsh/ruff)
+
+
 A bidirectional Python code generator that converts between AsyncAPI 3.0 specifications and Python code (pure Python or FastAPI implementations).
 
 ## Features ✨
 
-- Bidirectional conversion between [AsyncAPI 3.0](https://www.asyncapi.com/docs/reference/specification/v3.0.0) and Python code
-- Generate Python code from AsyncAPI 3.0 specifications:
-  - Pure Python implementations with type hints
-  - FastAPI endpoints with Pydantic models
-- Generate AsyncAPI 3.0 specifications from Python code
-- Automatic type inference and mapping
-- Support for both async and sync functions
+- 🔄 Bidirectional conversion between [AsyncAPI 3.0](https://www.asyncapi.com/docs/reference/specification/v3.0.0) and Python code
+- 🐍 Generate Python code from AsyncAPI 3.0 specifications:
+  - 🐍 Pure Python implementations with type hints
+  - ⚡ FastAPI endpoints with Pydantic models
+- 📄 Generate AsyncAPI 3.0 specifications from Python code
+- 🧠 Automatic type inference and mapping
+- ⚡ Support for both async and sync functions
 
 ## Installation 📦
 
 ```bash
 pip install zen-generator
 ```
+
 > [!IMPORTANT]
->Currently, only model and function definitions in the `components` block of the AsyncAPI file are supported.
+> Currently, only model and function definitions in the `components` block of the AsyncAPI file are supported.
 > Inline definitions are not supported.
 
 > [!NOTE] 
-> This code snippet includes a custom definition for > declaring required parameters in model/function > definitions.
+> This code snippet includes a custom definition for declaring required parameters in model/function definitions.
 > Specifically, the `required` keyword is used to specify mandatory fields, as shown below:
 
 ```yaml
@@ -32,8 +40,6 @@ required:
   - user_id
 ```
 > This ensures that the `user_id` parameter is always provided when the model or function is utilized.
-
-
 
 ## Quick Start 🏃
 
@@ -124,7 +130,6 @@ $ fastapi [OPTIONS]
 
 ## Generated Code Examples 📝
 
-
 ### Pure Python Implementation (models.py)
 
 ```python
@@ -153,7 +158,7 @@ def get_user(user_id: int) -> UserModel:
 ### FastAPI Implementation (models.py)
 
 ```python
-from __future__ import annotations
+from __future__annotations
 
 from pydantic import BaseModel
 
@@ -166,7 +171,7 @@ class UserModel(BaseModel):
 ### FastAPI Implementation (functions.py)
 
 ```python
-from __future__ import annotations
+from __future__annotations
 
 from fastapi import FastAPI
 
@@ -178,7 +183,6 @@ app = FastAPI()
 async def get_user(user_id: int) -> UserModel:
     ...
 ```
-
 
 ### Asyncapi documentation (asyncapi.yaml)
 

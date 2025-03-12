@@ -112,6 +112,7 @@ def fastapi(
 @app.callback()
 def main() -> None:
     print("Welcome to the zen generator")
+    app()
 
 
 if __name__ == "__main__":

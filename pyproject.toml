@@ -1,6 +1,6 @@
 [project]
 name = "zen-generator"
-version = "0.1.3"
+version = "0.1.4"
 description = "A bidirectional Python code generator that converts between AsyncAPI 3.0 specifications and Python code (pure Python or FastAPI implementations)."
 authors = [{ name = "Carlo Bertini [WaYdotNET]", email = "waydotnet@gmail.com" }]
 readme = "README.md"
@@ -46,7 +46,7 @@ dev = [
 ]
 
 [project.scripts]
-zen-generator = "zen_generator.cli"
+zen-generator = "zen_generator.cli:main"
 
 [tool.ruff]
 line-length = 120

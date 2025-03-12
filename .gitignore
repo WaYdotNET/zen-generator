@@ -13,3 +13,4 @@ wheels/
 
 # Project specific
 tests/output/
+.coverage

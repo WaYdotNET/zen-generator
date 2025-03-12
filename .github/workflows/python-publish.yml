@@ -37,6 +37,8 @@ jobs:
       - name: Publish package
         id: publish
         uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          skip-existing: true
         
       - name: Create GitHub release
         uses: actions/create-release@v1

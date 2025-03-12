@@ -263,23 +263,17 @@ Requirements:
 
 ```bash
 # Install uv if not already installed
-pip install uv
+# see https://docs.astral.sh/uv/getting-started/installation/
 
 # Clone repository
 git clone https://github.com/WaYdotNET/zen-generator.git
 cd zen-generator
 
-# Create and activate virtual environment with uv
-uv venv
-source .venv/bin/activate  # On macOS/Linux
-# or
-.venv\Scripts\activate  # On Windows
-
 # Install dependencies with uv
 uv sync
 
 # Run tests
-python -m pytest
+uv run pytest
 ```
 
 ## Best Practices 💡

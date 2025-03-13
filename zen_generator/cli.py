@@ -111,8 +111,9 @@ def fastapi(
 
 @app.callback()
 def main() -> None:
-    print("Welcome to the zen generator")
-    app()
+    print("Welcome to the Zen Generator CLI!")
+    print("This tool helps you generate AsyncAPI documentation and Python code from your source files.")
+    print("For more information, refer to the README.md file.")
 
 
 if __name__ == "__main__":

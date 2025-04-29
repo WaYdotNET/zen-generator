@@ -53,6 +53,7 @@ def create_async_api_content(
         # components.operations
         components["operations"][func] = {
             "action": "receive",
+            # The description is now sourced from the 'request' object for better clarity.
             "description": content.get("request", {}).get("description", ""),
             "channel": {"$ref": f"#/channels/{func}"},
             "messages": [{"$ref": f"#/channels/{func}/messages/request"}],
